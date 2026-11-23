@@ -12,7 +12,7 @@ import { discountPercent } from '../../data/products';
   title="همه محصولات"
   description="فهرست کامل محصولات لوازم خانگی هومیکس؛ فیلتر بر اساس دسته‌بندی، برند، قیمت و تخفیف، همراه با جستجو و مرتب‌سازی."
 >
-  <div class="page-head">
+  <div class="page-head shop-hero">
     <div class="container">
       <Breadcrumb items={[{ label: 'صفحه اصلی', href: '' }, { label: 'محصولات' }]} />
       <div class="ph-row">
@@ -22,6 +22,9 @@ import { discountPercent } from '../../data/products';
         </div>
         <div class="ph-count"><Icon name="list" size={18} /> <strong data-count>{toFa(products.length)}</strong> محصول</div>
       </div>
+      <nav class="shop-categories" aria-label="دسته‌بندی سریع">
+        {categories.slice(0, 8).map(c => <a href={href(`category/${c.slug})}><span>{c.name}</span><Icon name="arrow-left" size={14} /></a>)}
+      </nav>
     </div>
   </div>
 
@@ -130,16 +133,16 @@ import { discountPercent } from '../../data/products';
 </Layout>
 
 <style>
-  .page-head { background: var(--surface); border-bottom: 1px solid var(--border); padding-block: 22px 24px; }
+  .page-head { background: var(--surface); border-bottom: 1px solid var(--border); padding-block: 22px 24px; }\n  .shop-hero { background: radial-gradient(ellipse at 12% 10%, rgba(245,166,35,.12), transparent 40%), linear-gradient(135deg,#fff,#f2f6fb); }\n  .shop-categories { display:flex; flex-wrap:wrap; gap:10px; margin-top:22px; }\n  .shop-categories a { display:flex; align-items:center; gap:8px; border:1px solid var(--border); border-radius:var(--r-pill); background:#fff; padding:9px 14px; font-size:.85rem; font-weight:650; color:var(--brand-navy); transition:all .2s; }\n  .shop-categories a:hover { border-color:var(--brand-gold); color:var(--brand-gold-700); transform:translateY(-2px); box-shadow:var(--shadow-sm); }
   .ph-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-top: 14px; }
   .page-head h1 { font-size: clamp(1.6rem, 3vw, 2.1rem); }
   .ph-sub { color: var(--text-muted); margin-top: 6px; }
   .ph-count { display: inline-flex; align-items: center; gap: 8px; background: var(--surface-2); padding: 10px 16px; border-radius: var(--r-pill); font-size: .9rem; color: var(--text-muted); }
   .ph-count strong { color: var(--brand-navy); }
 
-  .shop-wrap { display: grid; grid-template-columns: 280px 1fr; gap: 28px; padding-block: 32px; align-items: flex-start; }
+  .shop-wrap { display: grid; grid-template-columns: 270px minmax(0,1fr); gap: 24px; padding-block: 36px; align-items: flex-start; }
 
-  .filters { position: sticky; top: calc(var(--header-h) + 16px); background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 20px; }
+  .filters { position: sticky; top: calc(var(--header-h) + 16px); background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 20px; box-shadow:var(--shadow-sm); }
   .filters-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
   .filters-head h2 { font-size: 1rem; display: inline-flex; align-items: center; gap: 8px; }
   .clear-btn { color: var(--brand-coral-600); font-size: .82rem; font-weight: 700; }
@@ -174,7 +177,7 @@ import { discountPercent } from '../../data/products';
   .sort-wrap select { padding: 9px 14px; border: 1.5px solid var(--border); border-radius: var(--r-sm); background: var(--surface); font-size: .88rem; outline: none; cursor: pointer; }
   .sort-wrap select:focus { border-color: var(--brand-gold); }
 
-  .shop-grid { grid-template-columns: repeat(3, 1fr); }
+  .shop-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap:18px; }
 
   .shop-empty { text-align: center; padding: 60px 20px; color: var(--text-muted); }
   .shop-empty :global(svg) { color: var(--text-soft); margin: 0 auto 14px; }
@@ -186,10 +189,10 @@ import { discountPercent } from '../../data/products';
     .filters { position: fixed; top: 0; right: -100%; width: min(320px, 86vw); height: 100vh; z-index: 300; border-radius: 0; overflow-y: auto; transition: right .3s var(--ease); padding-top: 60px; }
     .filters.open { right: 0; box-shadow: -10px 0 40px rgba(14,34,64,.2); }
     .filter-toggle { display: inline-flex; }
-    .shop-grid { grid-template-columns: repeat(2, 1fr); }
+    .shop-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   }
   @media (max-width: 540px) {
-    .shop-grid { grid-template-columns: 1fr; }
+    .shop-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap:12px; }\n    .shop-categories { flex-wrap:nowrap; overflow-x:auto; padding-bottom:6px; }\n    .shop-categories a { flex-shrink:0; }
   }
 </style>
 
