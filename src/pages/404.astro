@@ -1,0 +1,49 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Icon from '../components/Icon.astro';
+import { categories } from '../data';
+import { href } from '../lib/nav';
+---
+<Layout title="صفحه یافت نشد" description="صفحه مورد نظر یافت نشد." noindex>
+  <section class="nf">
+    <div class="nf-bg" aria-hidden="true"></div>
+    <div class="container nf-inner">
+      <div class="nf-code">۴۰۴</div>
+      <h1>صفحه مورد نظر پیدا نشد</h1>
+      <p>متأسفیم! صفحه‌ای که دنبال آن بودید وجود ندارد، جابه‌جا شده یا حذف شده است.</p>
+      <div class="nf-actions">
+        <a href={href('')} class="btn btn-primary btn-lg"><Icon name="home" size={18} /> بازگشت به خانه</a>
+        <a href={href('products')} class="btn btn-ghost btn-lg"><Icon name="cart" size={18} /> مشاهده محصولات</a>
+      </div>
+
+      <div class="nf-cats">
+        <p>یا یکی از دسته‌بندی‌های زیر را بررسی کنید:</p>
+        <div class="nf-cat-grid">
+          {categories.slice(0, 6).map((c) => (
+            <a href={href(`category/${c.slug}`)} class="nf-cat">
+              <Icon name={c.icon} size={22} />
+              <span>{c.name}</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .nf { position: relative; min-height: 70vh; display: grid; place-items: center; overflow: hidden; background: linear-gradient(135deg, #f5f7fb, #e8eef7); padding-block: 60px; }
+  .nf-bg { position: absolute; inset: 0; background: radial-gradient(circle at 80% 20%, rgba(245,166,35,.12), transparent 45%), radial-gradient(circle at 15% 80%, rgba(24,169,153,.10), transparent 40%); }
+  .nf-inner { position: relative; text-align: center; }
+  .nf-code { font-size: clamp(5rem, 16vw, 10rem); font-weight: 800; line-height: 1; background: linear-gradient(135deg, var(--brand-navy), var(--brand-navy-500)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 8px; }
+  .nf h1 { font-size: clamp(1.4rem, 3vw, 2rem); margin-bottom: 12px; }
+  .nf p { color: var(--text-muted); max-width: 44ch; margin: 0 auto 24px; }
+  .nf-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 40px; }
+  .nf-cats { max-width: 640px; margin: 0 auto; }
+  .nf-cats > p { font-size: .9rem; margin-bottom: 14px; }
+  .nf-cat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .nf-cat { display: flex; flex-direction: column; align-items: center; gap: 8px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); padding: 18px 12px; font-size: .85rem; font-weight: 600; color: var(--brand-navy); transition: all .25s var(--ease); }
+  .nf-cat:hover { transform: translateY(-3px); box-shadow: var(--shadow-sm); border-color: var(--brand-gold); color: var(--brand-gold-700); }
+  .nf-cat :global(svg) { color: var(--brand-gold); }
+  @media (max-width: 540px) { .nf-cat-grid { grid-template-columns: repeat(2, 1fr); } }
+</style>

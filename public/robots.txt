@@ -1,0 +1,7 @@
+# robots.txt — فروشگاه هومیکس (نمونه‌کار)
+# Astro روی GitHub Pages: مسیر پایه /homix-astro-showcase/
+
+User-agent: *
+Allow: /
+
+Sitemap: https://rasoolbahadran-stack.github.io/homix-astro-showcase/sitemap-index.xml

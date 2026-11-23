@@ -1,0 +1,159 @@
+---
+import Icon from './Icon.astro';
+import { site, trustBadges, categories } from '../data';
+import { href } from '../lib/nav';
+const year = new Date().getFullYear();
+const yearFa = new Date().toLocaleDateString('fa-IR', { year: 'numeric' });
+const linkCols = [
+  {
+    title: 'خدمات مشتریان',
+    links: [
+      { label: 'راهنمای خرید', href: 'faq' },
+      { label: 'نحوه ارسال', href: 'faq' },
+      { label: 'شرایط بازگشت کالا', href: 'faq' },
+      { label: 'خرید اقساطی', href: 'faq' },
+      { label: 'پیگیری سفارش', href: 'contact' },
+    ],
+  },
+  {
+    title: 'با هومیکس',
+    links: [
+      { label: 'درباره ما', href: 'about' },
+      { label: 'تماس با ما', href: 'contact' },
+      { label: 'سوالات متداول', href: 'faq' },
+      { label: 'قوانین و شرایط', href: 'terms' },
+      { label: 'حریم خصوصی', href: 'terms' },
+    ],
+  },
+];
+---
+<footer class="site-footer">
+  <!-- نوار اعتماد -->
+  <div class="footer-trust">
+    <div class="container trust-grid">
+      {trustBadges.map((t) => (
+        <div class="trust-item">
+          <span class="trust-ic"><Icon name={t.icon} size={22} /></span>
+          <div>
+            <strong>{t.title}</strong>
+            <p>{t.desc}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <div class="footer-main">
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <div class="logo">
+          <span class="logo-mark" aria-hidden="true">
+            <svg viewBox="0 0 64 64" width="44" height="44">
+              <rect width="64" height="64" rx="16" fill="#10243e"/>
+              <rect x="18" y="16" width="28" height="32" rx="4" fill="none" stroke="#f5a623" stroke-width="3"/>
+              <path d="M18 30h28" stroke="#f5a623" stroke-width="3" stroke-linecap="round"/>
+              <circle cx="32" cy="40" r="3" fill="#f5a623"/>
+            </svg>
+          </span>
+          <span class="logo-text">
+            <span class="logo-name">هومیکس</span>
+            <span class="logo-sub">{site.tagline}</span>
+          </span>
+        </div>
+        <p class="footer-desc">{site.description}</p>
+        <div class="footer-contact">
+          <a href={site.phoneHref}><Icon name="phone" size={16} /> {site.phone}</a>
+          <a href={site.emailHref}><Icon name="mail" size={16} /> {site.email}</a>
+          <span><Icon name="location" size={16} /> {site.address}</span>
+        </div>
+        <div class="footer-social">
+          {site.social.map((s) => (
+            <a href={s.href} aria-label={s.name} class="social-link"><Icon name={s.icon} size={18} /></a>
+          ))}
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h4>دسته‌بندی‌ها</h4>
+        <ul>
+          {categories.slice(0, 7).map((c) => (
+            <li><a href={href(`category/${c.slug}`)}>{c.name}</a></li>
+          ))}
+          <li><a href={href('products')} class="more">همه دسته‌بندی‌ها ←</a></li>
+        </ul>
+      </div>
+
+      {linkCols.map((col) => (
+        <div class="footer-col">
+          <h4>{col.title}</h4>
+          <ul>
+            {col.links.map((l) => (
+              <li><a href={href(l.href)}>{l.label}</a></li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <div class="container bottom-inner">
+      <p>© {yearFa} — تمامی حقوق برای فروشگاه نمونه‌کار «هومیکس» محفوظ است.</p>
+      <p class="footer-demo">
+        <Icon name="sparkles" size={14} /> {site.demoNote}
+      </p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer { background: var(--brand-navy-800); color: #c5d0e2; margin-top: 40px; }
+
+  .footer-trust { background: var(--surface); border-top: 1px solid var(--border); }
+  .trust-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; padding-block: 28px; }
+  .trust-item { display: flex; gap: 14px; align-items: flex-start; }
+  .trust-ic {
+    flex-shrink: 0; width: 46px; height: 46px; border-radius: var(--r-md);
+    background: linear-gradient(135deg, rgba(245,166,35,.12), rgba(245,166,35,.04));
+    color: var(--brand-gold-700); display: grid; place-items: center;
+  }
+  .trust-item strong { color: var(--text); font-size: .95rem; display: block; margin-bottom: 2px; }
+  .trust-item p { font-size: .82rem; color: var(--text-muted); line-height: 1.5; }
+
+  .footer-main { padding-block: 56px 40px; }
+  .footer-grid { display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 40px; }
+
+  .footer-brand .logo { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+  .logo-name { font-size: 1.4rem; font-weight: 800; color: #fff; }
+  .logo-sub { font-size: .72rem; color: #7e8da6; }
+  .footer-desc { font-size: .86rem; line-height: 1.8; color: #9aa9c2; margin-bottom: 18px; }
+  .footer-contact { display: flex; flex-direction: column; gap: 8px; font-size: .85rem; }
+  .footer-contact a, .footer-contact span { display: inline-flex; align-items: center; gap: 8px; color: #c5d0e2; }
+  .footer-contact a:hover { color: var(--brand-gold); }
+  .footer-social { display: flex; gap: 10px; margin-top: 18px; }
+  .social-link {
+    width: 38px; height: 38px; border-radius: var(--r-sm); background: rgba(255,255,255,.06);
+    display: grid; place-items: center; color: #c5d0e2; transition: all .25s var(--ease);
+  }
+  .social-link:hover { background: var(--brand-gold); color: var(--brand-navy-800); transform: translateY(-2px); }
+
+  .footer-col h4 { color: #fff; font-size: 1rem; margin-bottom: 16px; }
+  .footer-col ul { display: flex; flex-direction: column; gap: 10px; }
+  .footer-col a { color: #9aa9c2; font-size: .87rem; transition: color .2s, padding .2s; }
+  .footer-col a:hover { color: var(--brand-gold); padding-right: 4px; }
+  .footer-col .more { color: var(--brand-gold) !important; font-weight: 700; }
+
+  .footer-bottom { border-top: 1px solid rgba(255,255,255,.08); padding-block: 18px; font-size: .8rem; }
+  .bottom-inner { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .footer-demo { display: inline-flex; align-items: center; gap: 6px; color: var(--brand-gold); font-weight: 600; }
+
+  @media (max-width: 880px) {
+    .trust-grid { grid-template-columns: repeat(2, 1fr); gap: 22px; }
+    .footer-grid { grid-template-columns: 1fr 1fr; gap: 30px; }
+    .footer-brand { grid-column: 1 / -1; }
+  }
+  @media (max-width: 520px) {
+    .trust-grid { grid-template-columns: 1fr; }
+    .footer-grid { grid-template-columns: 1fr; }
+  }
+</style>

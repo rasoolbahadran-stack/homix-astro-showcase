@@ -1,0 +1,122 @@
+---
+import Icon from './Icon.astro';
+import type { Product } from '../data/types';
+import { brandById, discountPercent } from '../data';
+import { priceLabel, toFa } from '../lib/format';
+import { href } from '../lib/nav';
+
+interface Props {
+  product: Product;
+  class?: string;
+  stagger?: number | string;
+}
+const { product: p, class: cls = '', stagger } = Astro.props;
+const brand = brandById(p.brandId);
+const disc = discountPercent(p);
+const payload = JSON.stringify({
+  id: p.id,
+  name: p.name,
+  slug: p.slug,
+  price: p.price,
+  image: p.images[0],
+  maxQty: p.stockCount,
+});
+---
+<article class={`product-card reveal ${cls}`} {...(stagger !== undefined ? { 'data-stagger': stagger } : {})}>
+  <div class="card-media">
+    <a href={href(`products/${p.slug}`)} class="card-link" aria-label={p.name}>
+      <img src={p.images[0]} alt={p.name} loading="lazy" width="420" height="420" class="card-img" />
+    </a>
+    <div class="card-badges">
+      {disc && <span class="badge badge-discount">٪{toFa(disc)} تخفیف</span>}
+      {p.badge === 'new' && <span class="badge badge-new">جدید</span>}
+      {p.badge === 'bestseller' && <span class="badge badge-bestseller">پرفروش</span>}
+      {p.badge === 'special' && <span class="badge badge-special">ویژه</span>}
+    </div>
+    {p.inStock ? (
+      <span class="card-stock in"><Icon name="check-circle" size={14} /> موجود</span>
+    ) : (
+      <span class="card-stock out">ناموجود</span>
+    )}
+  </div>
+
+  <div class="card-body">
+    {brand && <a href={href(`brands`)} class="card-brand" style={`--bc:${brand.color}`}>{brand.name}</a>}
+    <h3 class="card-title">
+      <a href={href(`products/${p.slug}`)}>{p.name}</a>
+    </h3>
+    <div class="card-rating">
+      <span class="stars" aria-label={`امتیاز ${p.rating} از ۵`}>
+        {[1,2,3,4,5].map((i) => (
+          <Icon name={i <= Math.round(p.rating) ? 'star' : 'star-outline'} size={14} class={i <= Math.round(p.rating) ? 'filled' : ''} />
+        ))}
+      </span>
+      <span class="review-count">({toFa(p.reviewCount)})</span>
+    </div>
+
+    <div class="card-price-row">
+      <div class="card-price">
+        {p.oldPrice && <span class="price-old">{priceLabel(p.oldPrice)}</span>}
+        <span class="price-now">{priceLabel(p.price)}</span>
+      </div>
+      {p.inStock && (
+        <button class="add-btn" data-add={payload} aria-label="افزودن به سبد خرید">
+          <Icon name="cart" size={18} />
+        </button>
+      )}
+    </div>
+  </div>
+</article>
+
+<style>
+  .product-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg);
+    overflow: hidden; display: flex; flex-direction: column; transition: transform .35s var(--ease), box-shadow .35s var(--ease), border-color .35s;
+  }
+  .product-card:hover {
+    transform: translateY(-6px); box-shadow: var(--shadow-lg); border-color: transparent;
+  }
+
+  .card-media { position: relative; aspect-ratio: 1 / 1; background: var(--surface-2); overflow: hidden; }
+  .card-link { display: block; width: 100%; height: 100%; }
+  .card-img {
+    width: 100%; height: 100%; object-fit: cover; transition: transform .5s var(--ease);
+  }
+  .product-card:hover .card-img { transform: scale(1.06); }
+
+  .card-badges { position: absolute; top: 12px; right: 12px; display: flex; flex-direction: column; gap: 6px; align-items: flex-end; }
+  .card-stock {
+    position: absolute; bottom: 10px; left: 10px; background: rgba(255,255,255,.92);
+    padding: 4px 10px; border-radius: var(--r-pill); font-size: .72rem; font-weight: 700;
+    display: inline-flex; align-items: center; gap: 4px; backdrop-filter: blur(4px);
+  }
+  .card-stock.in { color: var(--brand-teal-600); }
+  .card-stock.out { color: var(--brand-coral-600); }
+
+  .card-body { padding: 16px 16px 18px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+  .card-brand {
+    font-size: .76rem; font-weight: 700; color: var(--bc, var(--brand-navy-600));
+    width: fit-content;
+  }
+  .card-title { font-size: .92rem; font-weight: 700; line-height: 1.5; }
+  .card-title a { color: var(--text); transition: color .2s; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .card-title a:hover { color: var(--brand-gold-700); }
+
+  .card-rating { display: flex; align-items: center; gap: 6px; }
+  .stars { display: inline-flex; gap: 1px; color: var(--brand-gold); }
+  .review-count { font-size: .76rem; color: var(--text-soft); }
+
+  .card-price-row { margin-top: auto; display: flex; align-items: flex-end; justify-content: space-between; gap: 10px; padding-top: 6px; }
+  .card-price { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
+  .price-now { font-size: 1.05rem; font-weight: 800; color: var(--brand-navy); }
+  .price-old { font-size: .8rem; }
+
+  .add-btn {
+    flex-shrink: 0; width: 42px; height: 42px; border-radius: var(--r-md);
+    background: linear-gradient(135deg, var(--brand-gold), var(--brand-gold-600));
+    color: #fff; display: grid; place-items: center; box-shadow: var(--shadow-gold);
+    transition: transform .25s var(--ease);
+  }
+  .add-btn:hover { transform: scale(1.08) rotate(-4deg); }
+  .add-btn:active { transform: scale(.95); }
+</style>

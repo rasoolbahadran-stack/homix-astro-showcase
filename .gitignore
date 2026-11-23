@@ -1,0 +1,32 @@
+# build output
+dist/
+.astro/
+
+# dependencies
+node_modules/
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# environment variables
+.env
+.env.production
+.env.local
+*.local
+
+# macOS
+.DS_Store
+
+# editor
+.vscode/
+.idea/
+
+# credentials
+.gh-token
+*.token
+
+# image fetch cache (not part of repo)
+.img-cache/

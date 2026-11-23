@@ -1,0 +1,68 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Breadcrumb from '../components/Breadcrumb.astro';
+import Icon from '../components/Icon.astro';
+import { brands, productsByBrand, categories } from '../data';
+import { toFa } from '../lib/format';
+import { href } from '../lib/nav';
+---
+<Layout
+  title="برندها"
+  description="برندهای معتبر لوازم خانگی موجود در فروشگاه هومیکس — سامسونگ، ال‌جی، بوش، زیمنس، اسنوا و سایر برترین تولیدکنندگان جهان."
+>
+  <div class="container brands-wrap">
+    <Breadcrumb items={[{ label: 'صفحه اصلی', href: '' }, { label: 'برندها' }]} />
+    <div class="brands-head">
+      <span class="eyebrow"><Icon name="sparkles" size={14} /> برندهای همکار</span>
+      <h1>برندهای معتبر هومیکس</h1>
+      <p>ما تنها محصولات برترین تولیدکنندگان جهان را با ضمانت اصالت کالا عرضه می‌کنیم.</p>
+    </div>
+
+    <div class="brands-list">
+      {brands.map((b, i) => {
+        const count = productsByBrand(b.id).length;
+        return (
+          <a href={href(`products?brand=${b.slug}`)} class="brand-card reveal" data-stagger={i} style={`--bc:${b.color}`}>
+            <div class="brand-mono" style={`background:${b.color}`}>{b.monogram}</div>
+            <div class="brand-info">
+              <strong>{b.name}</strong>
+              <span>{toFa(count)} محصول</span>
+            </div>
+            <span class="brand-arrow"><Icon name="arrow-left" size={16} /></span>
+          </a>
+        );
+      })}
+    </div>
+
+    <div class="brands-note">
+      <Icon name="shield" size={20} />
+      <p>تمام محصولات برندهای موجود در هومیکس دارای گارانتی رسمی و کارت اصالت هستند.</p>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .brands-wrap { padding-block: 24px 60px; }
+  .brands-wrap :global(.breadcrumb) { margin-bottom: 20px; }
+  .brands-head { text-align: center; max-width: 56ch; margin: 0 auto 36px; }
+  .brands-head .eyebrow { display: inline-flex; align-items: center; gap: 6px; color: var(--brand-gold-700); font-weight: 700; font-size: .85rem; }
+  .brands-head h1 { font-size: clamp(1.7rem, 3.5vw, 2.3rem); margin: 10px 0 8px; }
+  .brands-head p { color: var(--text-muted); }
+
+  .brands-list { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .brand-card { display: flex; align-items: center; gap: 14px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); padding: 18px; transition: all .25s var(--ease); position: relative; }
+  .brand-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); border-color: var(--bc); }
+  .brand-mono { width: 52px; height: 52px; border-radius: var(--r-sm); color: #fff; font-weight: 800; font-size: 1.05rem; display: grid; place-items: center; flex-shrink: 0; }
+  .brand-info { flex: 1; }
+  .brand-info strong { display: block; font-size: .98rem; }
+  .brand-info span { font-size: .8rem; color: var(--text-soft); }
+  .brand-arrow { color: var(--text-soft); transition: transform .25s, color .25s; }
+  .brand-card:hover .brand-arrow { color: var(--bc); transform: translateX(-4px); }
+
+  .brands-note { display: flex; align-items: center; gap: 12px; margin-top: 36px; padding: 18px 24px; background: var(--surface-2); border-radius: var(--r-md); color: var(--text-muted); }
+  .brands-note :global(svg) { color: var(--brand-teal); flex-shrink: 0; }
+  .brands-note p { font-size: .9rem; }
+
+  @media (max-width: 880px) { .brands-list { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 480px) { .brands-list { grid-template-columns: 1fr; } }
+</style>

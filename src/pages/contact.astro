@@ -1,0 +1,161 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Breadcrumb from '../components/Breadcrumb.astro';
+import Icon from '../components/Icon.astro';
+import { site, contactSubjects } from '../data';
+---
+<Layout
+  title="تماس با ما"
+  description="تماس با فروشگاه هومیکس — شماره تلفن، ایمیل، آدرس و فرم ارتباط با کارشناسان فروش و پشتیبانی."
+>
+  <div class="container contact-wrap">
+    <Breadcrumb items={[{ label: 'صفحه اصلی', href: '' }, { label: 'تماس با ما' }]} />
+    <div class="contact-head">
+      <h1>در تماس باشیم</h1>
+      <p>پرسش، پیشنهاد یا نیاز به مشاوره دارید؟ کارشناسان هومیکس آماده پاسخگویی هستند.</p>
+    </div>
+
+    <div class="contact-grid">
+      <!-- اطلاعات تماس -->
+      <div class="contact-info">
+        <a href={site.phoneHref} class="ci-card">
+          <span class="ci-ic"><Icon name="phone" size={22} /></span>
+          <div><strong>تلفن پشتیبانی</strong><span>{site.phone}</span><small>{site.hours}</small></div>
+        </a>
+        <a href={site.emailHref} class="ci-card">
+          <span class="ci-ic"><Icon name="mail" size={22} /></span>
+          <div><strong>ایمیل</strong><span>{site.email}</span><small>پاسخ در کمتر از ۲۴ ساعت</small></div>
+        </a>
+        <div class="ci-card">
+          <span class="ci-ic"><Icon name="location" size={22} /></span>
+          <div><strong>آدرس</strong><span>{site.address}</span></div>
+        </div>
+        <div class="ci-card">
+          <span class="ci-ic"><Icon name="clock" size={22} /></span>
+          <div><strong>ساعات کاری</strong><span>{site.hours}</span></div>
+        </div>
+        <div class="ci-social">
+          {site.social.map((s) => (
+            <a href={s.href} class="ci-social-link" aria-label={s.name}><Icon name={s.icon} size={20} /></a>
+          ))}
+        </div>
+      </div>
+
+      <!-- فرم -->
+      <form class="contact-form" id="contact-form" novalidate>
+        <h2>فرم تماس</h2>
+        <div class="form-row">
+          <div class="field">
+            <label for="name">نام و نام خانوادگی <span class="req">*</span></label>
+            <input type="text" id="name" name="name" required minlength="3" placeholder="مثلاً: علی رضایی" />
+            <span class="err" data-err="name"></span>
+          </div>
+          <div class="field">
+            <label for="phone">شماره تماس <span class="req">*</span></label>
+            <input type="tel" id="phone" name="phone" required pattern="^0[۰-۹0-9]{10,11}$" inputmode="numeric" placeholder="مثلاً: ۰۹۱۲۳۴۵۶۷۸۹" />
+            <span class="err" data-err="phone"></span>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="field">
+            <label for="email">ایمیل</label>
+            <input type="email" id="email" name="email" placeholder="example@email.com" />
+            <span class="err" data-err="email"></span>
+          </div>
+          <div class="field">
+            <label for="subject">موضوع <span class="req">*</span></label>
+            <select id="subject" name="subject" required>
+              <option value="">انتخاب کنید…</option>
+              {contactSubjects.map((s) => <option value={s}>{s}</option>)}
+            </select>
+            <span class="err" data-err="subject"></span>
+          </div>
+        </div>
+        <div class="field">
+          <label for="message">پیام شما <span class="req">*</span></label>
+          <textarea id="message" name="message" required minlength="10" rows="5" placeholder="پیام خود را بنویسید…"></textarea>
+          <span class="err" data-err="message"></span>
+        </div>
+        <button type="submit" class="btn btn-primary btn-lg btn-block"><Icon name="mail" size={18} /> ارسال پیام</button>
+        <p class="form-note"><Icon name="sparkles" size={14} /> این فرم در نمونه‌کار نمایشی است؛ پیام‌ها ذخیره یا ارسال واقعی نمی‌شوند، اما اعتبارسنجی فرم فعال است.</p>
+      </form>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .contact-wrap { padding-block: 24px 60px; }
+  .contact-wrap :global(.breadcrumb) { margin-bottom: 20px; }
+  .contact-head { margin-bottom: 32px; }
+  .contact-head h1 { font-size: clamp(1.7rem, 3.5vw, 2.3rem); margin-bottom: 8px; }
+  .contact-head p { color: var(--text-muted); }
+
+  .contact-grid { display: grid; grid-template-columns: 1fr 1.3fr; gap: 28px; align-items: flex-start; }
+  .contact-info { display: flex; flex-direction: column; gap: 14px; }
+  .ci-card { display: flex; gap: 14px; align-items: flex-start; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); padding: 18px; transition: all .25s var(--ease); }
+  .ci-card:hover { transform: translateX(-3px); box-shadow: var(--shadow-sm); border-color: transparent; }
+  .ci-ic { flex-shrink: 0; width: 46px; height: 46px; border-radius: var(--r-sm); background: linear-gradient(135deg, rgba(245,166,35,.14), rgba(245,166,35,.04)); color: var(--brand-gold-700); display: grid; place-items: center; }
+  .ci-card strong { display: block; font-size: .92rem; margin-bottom: 3px; }
+  .ci-card span { display: block; font-size: .88rem; color: var(--text-muted); direction: ltr; text-align: right; }
+  .ci-card small { display: block; font-size: .76rem; color: var(--text-soft); margin-top: 2px; }
+  .ci-social { display: flex; gap: 10px; margin-top: 6px; }
+  .ci-social-link { width: 44px; height: 44px; border-radius: var(--r-sm); background: var(--surface); border: 1px solid var(--border); display: grid; place-items: center; color: var(--brand-navy); transition: all .25s; }
+  .ci-social-link:hover { background: var(--brand-gold); color: #fff; border-color: var(--brand-gold); transform: translateY(-2px); }
+
+  .contact-form { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 28px; }
+  .contact-form h2 { font-size: 1.2rem; margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .field { margin-bottom: 16px; display: flex; flex-direction: column; }
+  .field label { font-size: .88rem; font-weight: 600; margin-bottom: 6px; color: var(--text); }
+  .req { color: var(--brand-coral); }
+  .field input, .field select, .field textarea { padding: 11px 14px; border: 1.5px solid var(--border); border-radius: var(--r-sm); font-size: .92rem; outline: none; transition: border-color .2s, box-shadow .2s; font-family: inherit; }
+  .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--brand-gold); box-shadow: 0 0 0 3px rgba(245,166,35,.12); }
+  .field textarea { resize: vertical; }
+  .field.invalid input, .field.invalid select, .field.invalid textarea { border-color: var(--brand-coral); }
+  .err { font-size: .78rem; color: var(--brand-coral-600); min-height: 16px; margin-top: 4px; }
+  .form-note { display: flex; align-items: flex-start; gap: 6px; font-size: .8rem; color: var(--text-soft); margin-top: 14px; line-height: 1.6; }
+  .form-note :global(svg) { color: var(--brand-gold); flex-shrink: 0; margin-top: 2px; }
+
+  @media (max-width: 880px) {
+    .contact-grid { grid-template-columns: 1fr; }
+    .form-row { grid-template-columns: 1fr; }
+  }
+</style>
+
+<script>
+  import('../scripts/app.ts').then(({ toast }) => {
+    const form = document.getElementById('contact-form') as HTMLFormElement | null;
+    if (!form) return;
+    const fa = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
+    const toFaPhone = (v: string) => v.replace(/[0-9]/g, d => fa[+d]);
+
+    const setErr = (name: string, msg: string) => {
+      const el = form.querySelector(`[data-err="${name}"]`);
+      const field = form.querySelector(`#${name}`)?.closest('.field');
+      if (el) el.textContent = msg;
+      field?.classList.toggle('invalid', !!msg);
+    };
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      let ok = true;
+      const name = (form.querySelector('#name') as HTMLInputElement).value.trim();
+      const phone = (form.querySelector('#phone') as HTMLInputElement).value.trim();
+      const email = (form.querySelector('#email') as HTMLInputElement).value.trim();
+      const subject = (form.querySelector('#subject') as HTMLSelectElement).value;
+      const message = (form.querySelector('#message') as HTMLTextAreaElement).value.trim();
+
+      if (name.length < 3) { setErr('name', 'نام باید حداقل ۳ نویسه باشد.'); ok = false; } else setErr('name', '');
+      const phoneFa = toFaPhone(phone);
+      if (!/^0[۰-۹0-9]{10,11}$/.test(phoneFa)) { setErr('phone', 'شماره تماس معتبر نیست (مثلاً ۰۹۱۲۳۴۵۶۷۸۹).'); ok = false; } else setErr('phone', '');
+      if (email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { setErr('email', 'ایمیل معتبر نیست.'); ok = false; } else setErr('email', '');
+      if (!subject) { setErr('subject', 'موضوع را انتخاب کنید.'); ok = false; } else setErr('subject', '');
+      if (message.length < 10) { setErr('message', 'پیام باید حداقل ۱۰ نویسه باشد.'); ok = false; } else setErr('message', '');
+
+      if (ok) {
+        toast('پیام شما با موفقیت ثبت شد (نمونه‌کار)', 'success');
+        form.reset();
+      }
+    });
+  });
+</script>

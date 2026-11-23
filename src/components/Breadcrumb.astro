@@ -1,0 +1,46 @@
+---
+import Icon from './Icon.astro';
+import { href } from '../lib/nav';
+
+interface Crumb {
+  label: string;
+  href?: string;
+}
+interface Props {
+  items: Crumb[];
+}
+const { items } = Astro.props;
+// JSON-LD BreadcrumbList
+const ld = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: items.map((it, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    name: it.label,
+    ...(it.href ? { item: new URL(href(it.href), Astro.site).href } : {}),
+  })),
+};
+---
+<nav class="breadcrumb" aria-label="مسیر">
+  <script type="application/ld+json" set:html={JSON.stringify(ld)} />
+  <ol>
+    {items.map((it, i) => (
+      <li>
+        {i > 0 && <Icon name="chevron-left" size={14} class="sep" />}
+        {it.href
+          ? <a href={href(it.href)}>{it.label}</a>
+          : <span aria-current="page">{it.label}</span>}
+      </li>
+    ))}
+  </ol>
+</nav>
+
+<style>
+  .breadcrumb ol { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; font-size: .82rem; }
+  .breadcrumb li { display: inline-flex; align-items: center; gap: 6px; }
+  .breadcrumb a { color: var(--text-muted); transition: color .2s; }
+  .breadcrumb a:hover { color: var(--brand-gold-700); }
+  .breadcrumb span[aria-current="page"] { color: var(--brand-navy); font-weight: 700; }
+  .breadcrumb :global(.sep) { color: var(--text-soft); }
+</style>

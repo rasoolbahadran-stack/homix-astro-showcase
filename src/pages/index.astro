@@ -1,0 +1,423 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ProductCard from '../components/ProductCard.astro';
+import Icon from '../components/Icon.astro';
+import {
+  categories, brands, bestSellers, newArrivals, specialOffers, discountedProducts,
+  productsByCategory, site, benefits, stats,
+} from '../data';
+import { formatCount, toFa } from '../lib/format';
+import { href } from '../lib/nav';
+
+const hero = categories[0];
+const best = bestSellers().slice(0, 8);
+const fresh = newArrivals().slice(0, 4);
+const special = specialOffers().slice(0, 4);
+const flash = discountedProducts().slice(0, 4);
+const fridgeCats = categories.slice(0, 5);
+---
+<Layout
+  title="فروشگاه لوازم خانگی"
+  description="هومیکس، مرجع تخصصی لوازم خانگی؛ خرید آنلاین یخچال، ماشین لباسشویی، ظرفشویی، تلویزیون و لوازم آشپزخانه از برندهای معتبر با ضمانت اصالت کالا و ارسال سراسری."
+>
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <div class="hero-bg" aria-hidden="true"></div>
+    <div class="container hero-grid">
+      <div class="hero-content hero-anim">
+        <span class="hero-eyebrow"><Icon name="sparkles" size={16} /> نمونه‌کار فروشگاه لوازم خانگی</span>
+        <h1>خانه‌ای هوشمند، با <span class="gradient-text">لوازم خانگی</span> درجه‌یک</h1>
+        <p class="hero-sub">
+          هومیکس، مرجع تخصصی خرید آنلاین لوازم خانگی است؛ از یخچال و لباسشویی تا تلویزیون و
+          لوازم کوچک آشپزخانه، از معتبرترین برندهای جهان با ضمانت اصالت کالا و ارسال سراسری.
+        </p>
+        <div class="hero-cta">
+          <a href={href('products')} class="btn btn-primary btn-lg">
+            <Icon name="cart" size={20} /> مشاهده محصولات
+          </a>
+          <a href={href(`category/${hero.slug}`)} class="btn btn-ghost btn-lg">دسته‌بندی‌ها</a>
+        </div>
+        <ul class="hero-trust">
+          <li><Icon name="shield" size={18} /> اصالت کالا</li>
+          <li><Icon name="truck" size={18} /> ارسال رایگان</li>
+          <li><Icon name="return" size={18} /> ۷ روز بازگشت</li>
+          <li><Icon name="headset" size={18} /> مشاوره تخصصی</li>
+        </ul>
+      </div>
+
+      <div class="hero-visual hero-anim">
+        <div class="hero-img-wrap">
+          <img
+            src="https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/b418ec042f95.jpeg"
+            alt="آشپزخانه مدرن با لوازم خانگی ضدزنگ"
+            width="640" height="640" class="hero-img"
+            fetchpriority="high"
+          />
+          <div class="float-card float-1">
+            <span class="fc-ic"><Icon name="percent" size={20} /></span>
+            <div><strong>تا ۴۵٪ تخفیف</strong><span>در فروش ویژه هفته</span></div>
+          </div>
+          <div class="float-card float-2">
+            <span class="fc-ic teal"><Icon name="truck" size={20} /></span>
+            <div><strong>ارسال رایگان</strong><span>سفارش‌های بالای ۵ میلیون</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ STATS BAR ============ -->
+  <section class="stats-bar">
+    <div class="container stats-grid">
+      {stats.map((s) => (
+        <div class="stat-item reveal">
+          <span class="stat-val">{s.value}</span>
+          <span class="stat-label">{s.label}</span>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- ============ CATEGORIES ============ -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">دسته‌بندی محصولات</span>
+          <h2>هر چه آشپزخانه و خانه‌ای نیاز دارد</h2>
+        </div>
+        <a href={href('products')} class="more">همه دسته‌بندی‌ها <Icon name="arrow-left" size={16} /></a>
+      </div>
+      <div class="cat-grid">
+        {categories.map((c, i) => {
+          const count = productsByCategory(c.slug).length;
+          return (
+            <a href={href(`category/${c.slug}`)} class="cat-card reveal" data-stagger={i}>
+              <div class="cat-img"><img src={c.image} alt={c.name} loading="lazy" width="200" height="200" /></div>
+              <div class="cat-icon"><Icon name={c.icon} size={26} /></div>
+              <div class="cat-meta">
+                <strong>{c.name}</strong>
+                <span>{toFa(count)} محصول</span>
+              </div>
+            </a>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ BESTSELLERS ============ -->
+  <section class="section section-alt">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow"><Icon name="fire" size={14} /> پرفروش‌ترین‌ها</span>
+          <h2>محبوب‌ترین‌های مشتریان هومیکس</h2>
+        </div>
+        <a href={href('products?sort=bestseller')} class="more">مشاهده همه <Icon name="arrow-left" size={16} /></a>
+      </div>
+      <div class="prod-grid">
+        {best.map((p, i) => <ProductCard product={p} stagger={i} />)}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FLASH SALE / COUNTDOWN ============ -->
+  <section class="section">
+    <div class="container">
+      <div class="flash reveal">
+        <div class="flash-side">
+          <span class="flash-tag"><Icon name="bolt" size={16} /> پیشنهاد شگفت‌انگیز</span>
+          <h2>فروش ویژه آخر هفته</h2>
+          <p>فرصت محدود! تا پایان فروش ویژه، روی منتخب پرفروش‌ترین محصولات تا ۴۵٪ تخفیف بگیرید.</p>
+          <div class="countdown" id="countdown" data-deadline="">
+            <div class="cd-box"><span class="cd-num" id="cd-h">۰۰</span><span class="cd-lbl">ساعت</span></div>
+            <div class="cd-sep">:</div>
+            <div class="cd-box"><span class="cd-num" id="cd-m">۰۰</span><span class="cd-lbl">دقیقه</span></div>
+            <div class="cd-sep">:</div>
+            <div class="cd-box"><span class="cd-num" id="cd-s">۰۰</span><span class="cd-lbl">ثانیه</span></div>
+          </div>
+          <a href={href('products?filter=discount')} class="btn btn-primary btn-lg">مشاهده تخفیف‌ها</a>
+        </div>
+        <div class="flash-prods">
+          {flash.map((p, i) => <ProductCard product={p} stagger={i} />)}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ BANNER STRIP ============ -->
+  <section class="section-sm">
+    <div class="container banner-grid">
+      <a href={href('category/coffee-machines')} class="banner-card banner-1 reveal">
+        <div class="banner-text">
+          <span class="bn-eyebrow">قهوه حرفه‌ای در خانه</span>
+          <h3>اسپرسوساز و قهوه‌ساز</h3>
+          <span class="bn-cta">مشاهده ←</span>
+        </div>
+      </a>
+      <a href={href('category/televisions')} class="banner-card banner-2 reveal">
+        <div class="banner-text">
+          <span class="bn-eyebrow">سرگرمی هوشمند</span>
+          <h3>تلویزیون‌های QLED و OLED</h3>
+          <span class="bn-cta">مشاهده ←</span>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- ============ SPECIAL OFFERS ============ -->
+  <section class="section section-alt">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow"><Icon name="sparkles" size={14} /> پیشنهادهای ویژه</span>
+          <h2>انتخاب کارشناسان هومیکس</h2>
+        </div>
+        <a href={href('products')} class="more">همه محصولات <Icon name="arrow-left" size={16} /></a>
+      </div>
+      <div class="prod-grid">
+        {special.map((p, i) => <ProductCard product={p} stagger={i} />)}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ NEW ARRIVALS ============ -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow"><Icon name="sparkles" size={14} /> تازه‌های هومیکس</span>
+          <h2>جدیدترین محصولات</h2>
+        </div>
+        <a href={href('products?sort=newest')} class="more">همه جدیدها <Icon name="arrow-left" size={16} /></a>
+      </div>
+      <div class="prod-grid">
+        {fresh.map((p, i) => <ProductCard product={p} stagger={i} />)}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ BENEFITS ============ -->
+  <section class="section section-alt">
+    <div class="container">
+      <div class="section-head center-head">
+        <div>
+          <span class="eyebrow">چرا هومیکس؟</span>
+          <h2>مزایای خرید از فروشگاه هومیکس</h2>
+        </div>
+      </div>
+      <div class="benefits-grid">
+        {benefits.map((b, i) => (
+          <div class="benefit-card reveal" data-stagger={i}>
+            <span class="bn-ic"><Icon name={b.icon} size={26} /></span>
+            <h3>{b.title}</h3>
+            <p>{b.desc}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ BRANDS ============ -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head center-head">
+        <div>
+          <span class="eyebrow">برندهای معتبر</span>
+          <h2>با اعتماد برترین تولیدکنندگان جهان</h2>
+        </div>
+      </div>
+      <div class="brands-strip">
+        {brands.map((b) => (
+          <a href={href(`products?brand=${b.slug}`)} class="brand-tile" style={`--bc:${b.color}`}>
+            <span class="brand-mono" style={`background:${b.color}`}>{b.monogram}</span>
+            <span class="brand-name">{b.name}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ MEMBERSHIP CTA ============ -->
+  <section class="section-sm">
+    <div class="container">
+      <div class="cta-banner reveal">
+        <div class="cta-text">
+          <h2>در باشگاه مشتریان هومیکس عضو شوید</h2>
+          <p>از تخفیف‌های ویژه، پیشنهادهای اختصاصی و خدمات پس از فروش اولویت‌دار بهره‌مند شوید. عضویت رایگان است.</p>
+        </div>
+        <a href={href('about')} class="btn btn-primary btn-lg">عضویت رایگان</a>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  /* HERO */
+  .hero { position: relative; overflow: hidden; padding-block: clamp(36px, 6vw, 72px); background: linear-gradient(135deg, #f5f7fb 0%, #eaf0fa 60%, #e4ecf6 100%); }
+  .hero-bg {
+    position: absolute; inset: 0; pointer-events: none;
+    background:
+      radial-gradient(circle at 85% 15%, rgba(245,166,35,.12), transparent 45%),
+      radial-gradient(circle at 12% 80%, rgba(24,169,153,.10), transparent 40%);
+  }
+  .hero-grid { position: relative; display: grid; grid-template-columns: 1.05fr 1fr; gap: 40px; align-items: center; }
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: var(--r-pill);
+    background: rgba(245,166,35,.12); color: var(--brand-gold-700); font-weight: 700; font-size: .85rem; margin-bottom: 18px;
+  }
+  .hero-sub { font-size: 1.05rem; line-height: 1.9; max-width: 52ch; margin: 18px 0 28px; color: var(--text-muted); }
+  .hero-cta { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 30px; }
+  .hero-trust { display: flex; flex-wrap: wrap; gap: 22px; }
+  .hero-trust li { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; font-size: .88rem; color: var(--brand-navy); }
+  .hero-trust :global(svg) { color: var(--brand-teal); }
+
+  .hero-visual { display: grid; place-items: center; position: relative; }
+  .hero-img-wrap { position: relative; width: 100%; max-width: 460px; aspect-ratio: 1; }
+  .hero-img {
+    width: 100%; height: 100%; object-fit: cover; border-radius: var(--r-xl);
+    box-shadow: 0 30px 70px rgba(14,34,64,.22), 0 10px 24px rgba(14,34,64,.12);
+  }
+  .float-card {
+    position: absolute; display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,.96);
+    padding: 12px 18px; border-radius: var(--r-md); box-shadow: var(--shadow-lg); backdrop-filter: blur(6px);
+    animation: float 4s ease-in-out infinite;
+  }
+  .float-1 { bottom: 26px; right: -16px; }
+  .float-2 { top: 26px; left: -16px; animation-delay: 1.2s; }
+  .fc-ic { width: 42px; height: 42px; border-radius: var(--r-sm); background: rgba(245,166,35,.14); color: var(--brand-gold-700); display: grid; place-items: center; }
+  .fc-ic.teal { background: rgba(24,169,153,.14); color: var(--brand-teal-600); }
+  .float-card strong { display: block; font-size: .95rem; color: var(--text); }
+  .float-card span { font-size: .76rem; color: var(--text-muted); }
+
+  /* STATS */
+  .stats-bar { background: var(--brand-navy); color: #fff; }
+  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; padding-block: 30px; }
+  .stat-item { text-align: center; }
+  .stat-val { display: block; font-size: clamp(1.6rem, 3vw, 2.4rem); font-weight: 800; color: var(--brand-gold); letter-spacing: -.02em; }
+  .stat-label { font-size: .9rem; color: #aeb9cd; }
+
+  .section-alt { background: var(--surface-2); }
+  .center-head { justify-content: center; text-align: center; }
+  .center-head > div { align-items: center; display: flex; flex-direction: column; }
+  .center-head .eyebrow::before { display: none; }
+
+  /* CATEGORIES */
+  .cat-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; }
+  .cat-card {
+    position: relative; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg);
+    overflow: hidden; padding: 14px; display: flex; flex-direction: column; align-items: center; gap: 10px;
+    transition: transform .3s var(--ease), box-shadow .3s, border-color .3s;
+  }
+  .cat-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-md); border-color: transparent; }
+  .cat-img { width: 100%; aspect-ratio: 1.4; border-radius: var(--r-md); overflow: hidden; }
+  .cat-img img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s var(--ease); }
+  .cat-card:hover .cat-img img { transform: scale(1.08); }
+  .cat-icon {
+    position: absolute; top: 22px; right: 22px; width: 40px; height: 40px; border-radius: var(--r-sm);
+    background: rgba(255,255,255,.92); color: var(--brand-navy); display: grid; place-items: center; box-shadow: var(--shadow-sm);
+  }
+  .cat-meta { text-align: center; }
+  .cat-meta strong { display: block; font-size: .88rem; color: var(--text); }
+  .cat-meta span { font-size: .76rem; color: var(--text-soft); }
+
+  /* PRODUCT GRID */
+  .prod-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+
+  /* FLASH SALE */
+  .flash { display: grid; grid-template-columns: 1fr 1.6fr; gap: 28px; background: linear-gradient(135deg, var(--brand-navy-800), var(--brand-navy-600)); border-radius: var(--r-xl); padding: clamp(24px, 4vw, 44px); color: #fff; position: relative; overflow: hidden; }
+  .flash::before { content:''; position:absolute; top:-40%; left:-10%; width:300px; height:300px; background: radial-gradient(circle, rgba(245,166,35,.25), transparent 70%); }
+  .flash-side { position: relative; z-index: 1; }
+  .flash-tag { display: inline-flex; align-items: center; gap: 6px; background: var(--brand-gold); color: var(--brand-navy-800); padding: 6px 14px; border-radius: var(--r-pill); font-weight: 700; font-size: .82rem; margin-bottom: 14px; }
+  .flash h2 { color: #fff; }
+  .flash p { color: #b9c4d8; margin: 14px 0 22px; max-width: 38ch; }
+  .countdown { display: flex; align-items: center; gap: 8px; margin-bottom: 24px; }
+  .cd-box { display: flex; flex-direction: column; align-items: center; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: var(--r-md); padding: 10px 14px; min-width: 56px; }
+  .cd-num { font-size: 1.5rem; font-weight: 800; color: var(--brand-gold); font-variant-numeric: tabular-nums; }
+  .cd-lbl { font-size: .7rem; color: #aeb9cd; }
+  .cd-sep { font-size: 1.4rem; color: rgba(255,255,255,.4); font-weight: 800; }
+  .flash-prods { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; align-content: center; position: relative; z-index: 1; }
+  .flash-prods :global(.product-card) { background: #fff; }
+
+  /* BANNERS */
+  .banner-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .banner-card { border-radius: var(--r-xl); padding: clamp(26px, 4vw, 44px); min-height: 200px; display: flex; align-items: flex-end; overflow: hidden; position: relative; transition: transform .3s var(--ease); }
+  .banner-card:hover { transform: translateY(-4px); }
+  .banner-1 { background: linear-gradient(135deg, #6b4226, #8a5a30), url('https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/4c4a71c1aae9.jpg') center/cover; background-blend-mode: multiply; }
+  .banner-2 { background: linear-gradient(135deg, #0e2240, #1f4a7a), url('https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/da4f3ef02362.jpg') center/cover; background-blend-mode: multiply; }
+  .banner-text { position: relative; z-index: 1; }
+  .bn-eyebrow { display: block; color: var(--brand-gold); font-weight: 700; font-size: .82rem; margin-bottom: 6px; }
+  .banner-text h3 { color: #fff; font-size: clamp(1.2rem, 2.4vw, 1.7rem); }
+  .bn-cta { display: inline-block; margin-top: 10px; color: #fff; font-weight: 700; border-bottom: 2px solid var(--brand-gold); padding-bottom: 2px; }
+
+  /* BENEFITS */
+  .benefits-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+  .benefit-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 28px 22px; text-align: center; transition: transform .3s var(--ease), box-shadow .3s; }
+  .benefit-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-md); }
+  .bn-ic { width: 58px; height: 58px; margin: 0 auto 16px; border-radius: var(--r-md); background: linear-gradient(135deg, rgba(245,166,35,.14), rgba(245,166,35,.05)); color: var(--brand-gold-700); display: grid; place-items: center; }
+  .benefit-card h3 { font-size: 1.05rem; margin-bottom: 8px; }
+  .benefit-card p { font-size: .87rem; line-height: 1.7; }
+
+  /* BRANDS */
+  .brands-strip { display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; }
+  .brand-tile { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); padding: 18px 10px; display: flex; flex-direction: column; align-items: center; gap: 10px; transition: all .25s var(--ease); }
+  .brand-tile:hover { transform: translateY(-4px); border-color: var(--bc); box-shadow: var(--shadow-sm); }
+  .brand-mono { width: 48px; height: 48px; border-radius: var(--r-sm); color: #fff; font-weight: 800; font-size: 1rem; display: grid; place-items: center; letter-spacing: .02em; }
+  .brand-name { font-size: .82rem; font-weight: 600; color: var(--text-muted); }
+
+  /* CTA banner */
+  .cta-banner { display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; background: linear-gradient(120deg, var(--brand-gold), var(--brand-gold-600)); padding: clamp(28px, 4vw, 44px); border-radius: var(--r-xl); box-shadow: var(--shadow-gold); }
+  .cta-text h2 { color: var(--brand-navy-800); }
+  .cta-text p { color: rgba(14,34,64,.75); margin-top: 8px; max-width: 60ch; }
+  .cta-banner .btn { background: var(--brand-navy); color: #fff; box-shadow: var(--shadow-navy); }
+
+  /* RESPONSIVE */
+  @media (max-width: 1080px) {
+    .cat-grid { grid-template-columns: repeat(4, 1fr); }
+    .brands-strip { grid-template-columns: repeat(4, 1fr); }
+  }
+  @media (max-width: 880px) {
+    .hero-grid { grid-template-columns: 1fr; }
+    .hero-visual { order: -1; }
+    .hero-img-wrap { max-width: 360px; }
+    .flash { grid-template-columns: 1fr; }
+    .flash-prods { grid-template-columns: repeat(2, 1fr); }
+    .prod-grid { grid-template-columns: repeat(3, 1fr); }
+    .benefits-grid { grid-template-columns: repeat(2, 1fr); }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 24px; }
+  }
+  @media (max-width: 620px) {
+    .cat-grid { grid-template-columns: repeat(2, 1fr); }
+    .prod-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    .brands-strip { grid-template-columns: repeat(3, 1fr); }
+    .banner-grid { grid-template-columns: 1fr; }
+    .hero-trust { gap: 14px; }
+    .float-1, .float-2 { display: none; }
+  }
+</style>
+
+<script>
+  // شمارش معکوس فروش ویژه (هر ۲۴ ساعت به‌صورت چرخشی ریست می‌شود تا همیشه فعال بماند)
+  function tick() {
+    const h = document.getElementById('cd-h');
+    const m = document.getElementById('cd-m');
+    const s = document.getElementById('cd-s');
+    if (!h || !m || !s) return;
+    const fa = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
+    const pad = (n:number) => String(n).padStart(2,'0').replace(/[0-9]/g, d => fa[+d]);
+    // مدت زمان ثابت: ۲۳ ساعت و ۵۹ دقیقه و ۵۹ ثانیه از الان
+    const now = new Date();
+    const end = new Date(now);
+    end.setHours(23, 59, 59, 999);
+    let diff = Math.max(0, Math.floor((+end - +now) / 1000));
+    const hh = Math.floor(diff / 3600); diff %= 3600;
+    const mm = Math.floor(diff / 60);
+    const ss = diff % 60;
+    h.textContent = pad(hh);
+    m.textContent = pad(mm);
+    s.textContent = pad(ss);
+  }
+  tick();
+  setInterval(tick, 1000);
+</script>

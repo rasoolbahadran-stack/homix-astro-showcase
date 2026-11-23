@@ -1,0 +1,365 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import Icon from '../../components/Icon.astro';
+import { products, productBySlug, brandById, categoryBySlug, relatedProducts, discountPercent } from '../../data';
+import { priceLabel, toFa, faDate } from '../../lib/format';
+import { href } from '../../lib/nav';
+
+export function getStaticPaths() {
+  return products.map((p) => ({ params: { slug: p.slug }, props: { product: p } }));
+}
+
+const { product: p } = Astro.props;
+if (!p) return Astro.redirect('/404');
+const brand = brandById(p.brandId);
+const cat = categoryBySlug(p.categorySlug);
+const disc = discountPercent(p);
+const related = relatedProducts(p, 4);
+const payload = JSON.stringify({
+  id: p.id, name: p.name, slug: p.slug, price: p.price, image: p.images[0], maxQty: p.stockCount,
+});
+
+const ld = {
+  '@context': 'https://schema.org',
+  '@type': 'Product',
+  name: p.name,
+  image: p.images,
+  description: p.description,
+  sku: p.id.toUpperCase(),
+  brand: { '@type': 'Brand', name: brand?.name },
+  category: cat?.name,
+  warranty: p.warranty,
+  offers: {
+    '@type': 'Offer',
+    price: p.price,
+    priceCurrency: 'تومان',
+    availability: p.inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+    url: new URL(href(`products/${p.slug}`), Astro.site).href,
+    ...(p.oldPrice ? { priceValidUntil: '2026-12-31' } : {}),
+  },
+  aggregateRating: {
+    '@type': 'AggregateRating',
+    ratingValue: p.rating,
+    reviewCount: p.reviewCount,
+    bestRating: 5,
+  },
+};
+---
+<Layout
+  title={p.name}
+  description={p.shortDesc}
+  jsonLd={ld}
+>
+  <div class="container pd-wrap">
+    <div class="pd-bread"><Breadcrumb items={[{ label: 'صفحه اصلی', href: '' }, { label: 'محصولات', href: 'products' }, { label: cat?.name || 'محصول', href: `category/${p.categorySlug}` }, { label: p.name }]} /></div>
+
+    <div class="pd-grid">
+      <!-- گالری -->
+      <div class="pd-gallery reveal">
+        <div class="pd-main-img">
+          <img id="pd-main" src={p.images[0]} alt={p.name} width="600" height="600" fetchpriority="high" />
+          {disc && <span class="pd-disc">٪{toFa(disc)} تخفیف</span>}
+        </div>
+        <div class="pd-thumbs">
+          {p.images.map((img, i) => (
+            <button class={`pd-thumb ${i === 0 ? 'active' : ''}`} data-thumb={img} aria-label={`تصویر ${toFa(i + 1)}`}>
+              <img src={img} alt="" loading="lazy" width="90" height="90" />
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <!-- اطلاعات -->
+      <div class="pd-info hero-anim">
+        {brand && <a href={href(`products?brand=${brand.slug}`)} class="pd-brand" style={`--bc:${brand.color}`}>{brand.name}</a>}
+        <h1 class="pd-title">{p.name}</h1>
+
+        <div class="pd-rating-row">
+          <span class="stars">
+            {[1,2,3,4,5].map((i) => <Icon name={i <= Math.round(p.rating) ? 'star' : 'star-outline'} size={16} />)}
+          </span>
+          <span class="pd-rating-num">{toFa(p.rating)}</span>
+          <span class="pd-review-count">({toFa(p.reviewCount)} نظر)</span>
+          <span class="pd-sold"><Icon name="fire" size={14} /> {toFa(p.soldCount)} فروش</span>
+        </div>
+
+        <div class="pd-price-box">
+          {p.oldPrice && <span class="price-old pd-old">{priceLabel(p.oldPrice)}</span>}
+          <span class="pd-price-now">{priceLabel(p.price)}</span>
+          {disc && <span class="pd-save">صرفه‌جویی {priceLabel((p.oldPrice || 0) - p.price)}</span>}
+        </div>
+
+        <p class="pd-short">{p.shortDesc}</p>
+
+        <ul class="pd-keyfeats">
+          {p.features.slice(0, 4).map((f) => (
+            <li><Icon name="check-circle" size={16} /> {f}</li>
+          ))}
+        </ul>
+
+        <div class="pd-stock-row">
+          {p.inStock ? (
+            <span class="pd-stock in"><Icon name="check-circle" size={16} /> موجود ({toFa(p.stockCount)} عدد در انبار)</span>
+          ) : (
+            <span class="pd-stock out">ناموجود</span>
+          )}
+          <span class="pd-warranty"><Icon name="warranty" size={16} /> {p.warranty}</span>
+        </div>
+
+        <div class="pd-buy">
+          <div class="qty-stepper" id="qty-stepper">
+            <button data-qty-dec aria-label="کاهش">−</button>
+            <span data-qty-val id="qty-val">۱</span>
+            <button data-qty-inc aria-label="افزایش">+</button>
+          </div>
+          <button class="btn btn-primary btn-lg pd-add" id="pd-add" data-product={payload}>
+            <Icon name="cart" size={20} /> افزودن به سبد خرید
+          </button>
+        </div>
+        <div class="pd-cta-row">
+          <a href={href('cart')} class="btn btn-ghost"><Icon name="bolt" size={18} /> خرید سریع</a>
+          <span class="pd-installment"><Icon name="credit" size={16} /> خرید اقساطی تا ۱۲ ماه</span>
+        </div>
+
+        <div class="pd-mini-trust">
+          <span><Icon name="truck" size={18} /> ارسال رایگان بالای ۵ میلیون</span>
+          <span><Icon name="return" size={18} /> ۷ روز بازگشت</span>
+          <span><Icon name="install" size={18} /> نصب رایگان</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- تب‌ها: توضیحات / مشخصات / نظرات -->
+    <div class="pd-tabs reveal">
+      <div class="pd-tab-nav">
+        <button class="pd-tab active" data-tab="desc">توضیحات</button>
+        <button class="pd-tab" data-tab="specs">مشخصات فنی</button>
+        <button class="pd-tab" data-tab="reviews">نظرات و پرسش</button>
+      </div>
+
+      <div class="pd-tab-panel active" id="tab-desc">
+        <h2>توضیحات محصول</h2>
+        <p>{p.description}</p>
+        <h3>ویژگی‌های شاخص</h3>
+        <ul class="pd-feats-list">
+          {p.features.map((f) => <li><Icon name="check" size={18} /> {f}</li>)}
+        </ul>
+      </div>
+
+      <div class="pd-tab-panel" id="tab-specs">
+        <h2>مشخصات فنی</h2>
+        <table class="spec-table">
+          <tbody>
+            {p.specs.map((s) => (
+              <tr><th>{s.key}</th><td>{s.value}</td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="pd-tab-panel" id="tab-reviews">
+        <h2>نظرات و پرسش‌های کاربران</h2>
+        <div class="reviews-summary">
+          <div class="rev-score">
+            <span class="rev-big">{toFa(p.rating)}</span>
+            <span class="stars">{[1,2,3,4,5].map((i) => <Icon name={i <= Math.round(p.rating) ? 'star' : 'star-outline'} size={18} />)}</span>
+            <span>از {toFa(p.reviewCount)} نظر</span>
+          </div>
+          <div class="rev-note">
+            <p><Icon name="sparkles" size={16} /> این بخش در نسونه‌کار نمایشی فعال است؛ نظرات نمونه نمایش داده می‌شوند و ثبت واقعی انجام نمی‌گیرد.</p>
+          </div>
+        </div>
+        <div class="review-list">
+          {[
+            { name: 'مهدی رضایی', rating: 5, date: '۱۴۰۳/۰۸/۱۲', text: 'کیفیت ساخت عالی و ارسال سریع. پس از دو هفته استفاده، کاملاً راضی‌ام. نصب هم رایگان انجام شد.' },
+            { name: 'سارا محمدی', rating: 4, date: '۱۴۰۳/۰۷/۲۸', text: 'محصول اصل و گارانتی معتبر بود. فقط بسته‌بندی می‌توانست بهتر باشد. در مجموع خرید خوبی بود.' },
+            { name: 'علی کریمی', rating: 5, date: '۱۴۰۳/۰۶/۱۵', text: 'قیمت منصفانه‌ای داشت و مشاوران فروشگاه قبل از خرید دقیق راهنمایی کردند. پیشنهاد می‌کنم.' },
+          ].map((r) => (
+            <div class="review-item">
+              <div class="rev-head">
+                <span class="rev-avatar">{r.name.charAt(0)}</span>
+                <div>
+                  <strong>{r.name}</strong>
+                  <span class="rev-stars">{[1,2,3,4,5].map((i) => <Icon name={i <= r.rating ? 'star' : 'star-outline'} size={13} />)}</span>
+                </div>
+                <span class="rev-date">{r.date}</span>
+              </div>
+              <p>{r.text}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    <!-- محصولات مرتبط -->
+    {related.length > 0 && (
+      <section class="pd-related">
+        <div class="section-head">
+          <div><span class="eyebrow">محصولات مرتبط</span><h2>شاید این‌ها را هم بپسندید</h2></div>
+        </div>
+        <div class="prod-grid">
+          {related.map((rp, i) => <ProductCard product={rp} stagger={i} />)}
+        </div>
+      </section>
+    )}
+  </div>
+</Layout>
+
+<style>
+  .pd-wrap { padding-block: 24px 60px; }
+  .pd-bread { margin-bottom: 20px; }
+
+  .pd-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-bottom: 40px; }
+
+  /* gallery */
+  .pd-main-img { position: relative; border-radius: var(--r-xl); overflow: hidden; background: var(--surface); border: 1px solid var(--border); aspect-ratio: 1; }
+  .pd-main-img img { width: 100%; height: 100%; object-fit: cover; }
+  .pd-disc { position: absolute; top: 16px; right: 16px; background: var(--brand-coral); color: #fff; font-weight: 800; padding: 8px 16px; border-radius: var(--r-pill); font-size: .9rem; box-shadow: var(--shadow-sm); }
+  .pd-thumbs { display: flex; gap: 10px; margin-top: 12px; }
+  .pd-thumb { width: 78px; height: 78px; border-radius: var(--r-sm); overflow: hidden; border: 2px solid var(--border); background: var(--surface); transition: border-color .2s, transform .2s; }
+  .pd-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .pd-thumb:hover { transform: translateY(-2px); }
+  .pd-thumb.active { border-color: var(--brand-gold); }
+
+  /* info */
+  .pd-info { display: flex; flex-direction: column; gap: 12px; }
+  .pd-brand { font-weight: 700; color: var(--bc, var(--brand-navy-600)); width: fit-content; font-size: .9rem; }
+  .pd-title { font-size: clamp(1.3rem, 2.6vw, 1.85rem); line-height: 1.4; }
+  .pd-rating-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: .85rem; color: var(--text-muted); }
+  .stars { display: inline-flex; gap: 2px; color: var(--brand-gold); }
+  .pd-rating-num { font-weight: 700; color: var(--text); }
+  .pd-sold { display: inline-flex; align-items: center; gap: 4px; color: var(--brand-coral-600); margin-right: auto; }
+
+  .pd-price-box { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; padding: 18px 0; border-block: 1px solid var(--border); margin-block: 8px; }
+  .pd-price-now { font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 800; color: var(--brand-navy); }
+  .pd-old { font-size: 1.1rem; }
+  .pd-save { background: rgba(255,107,74,.12); color: var(--brand-coral-600); font-weight: 700; padding: 4px 12px; border-radius: var(--r-pill); font-size: .85rem; }
+
+  .pd-short { line-height: 1.8; }
+  .pd-keyfeats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-block: 8px; }
+  .pd-keyfeats li { display: flex; align-items: flex-start; gap: 8px; font-size: .88rem; color: var(--text-muted); }
+  .pd-keyfeats :global(svg) { color: var(--brand-teal); flex-shrink: 0; margin-top: 3px; }
+
+  .pd-stock-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 12px 0; }
+  .pd-stock { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; font-size: .88rem; }
+  .pd-stock.in { color: var(--brand-teal-600); }
+  .pd-stock.out { color: var(--brand-coral-600); }
+  .pd-warranty { display: inline-flex; align-items: center; gap: 6px; font-size: .85rem; color: var(--text-muted); }
+
+  .pd-buy { display: flex; gap: 12px; align-items: stretch; margin-block: 8px; }
+  .qty-stepper { display: flex; align-items: center; border: 1.5px solid var(--border); border-radius: var(--r-md); background: var(--surface); overflow: hidden; }
+  .qty-stepper button { width: 44px; height: 52px; font-size: 1.3rem; color: var(--brand-navy); transition: background .2s; }
+  .qty-stepper button:hover { background: var(--surface-2); }
+  .qty-stepper span { min-width: 44px; text-align: center; font-weight: 700; }
+  .pd-add { flex: 1; }
+  .pd-cta-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 4px; }
+  .pd-installment { display: inline-flex; align-items: center; gap: 6px; font-size: .85rem; color: var(--brand-gold-700); font-weight: 600; }
+
+  .pd-mini-trust { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 14px; padding-top: 14px; border-top: 1px dashed var(--border); }
+  .pd-mini-trust span { display: inline-flex; align-items: center; gap: 6px; font-size: .82rem; color: var(--text-muted); }
+  .pd-mini-trust :global(svg) { color: var(--brand-teal); }
+
+  /* tabs */
+  .pd-tabs { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); overflow: hidden; margin-bottom: 48px; }
+  .pd-tab-nav { display: flex; border-bottom: 1px solid var(--border); overflow-x: auto; }
+  .pd-tab { padding: 16px 24px; font-weight: 700; color: var(--text-muted); border-bottom: 2px solid transparent; white-space: nowrap; transition: all .2s; }
+  .pd-tab:hover { color: var(--text); }
+  .pd-tab.active { color: var(--brand-navy); border-bottom-color: var(--brand-gold); }
+  .pd-tab-panel { padding: 28px; display: none; }
+  .pd-tab-panel.active { display: block; animation: fadeIn .4s var(--ease); }
+  .pd-tab-panel h2 { font-size: 1.3rem; margin-bottom: 14px; }
+  .pd-tab-panel h3 { font-size: 1.05rem; margin: 20px 0 10px; }
+  .pd-tab-panel p { line-height: 1.9; }
+  .pd-feats-list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+  .pd-feats-list li { display: flex; align-items: flex-start; gap: 8px; font-size: .9rem; }
+  .pd-feats-list :global(svg) { color: var(--brand-teal); margin-top: 4px; }
+
+  .spec-table { width: 100%; border-collapse: collapse; }
+  .spec-table th, .spec-table td { padding: 12px 16px; border-bottom: 1px solid var(--border-soft); text-align: right; }
+  .spec-table th { width: 40%; background: var(--surface-2); color: var(--text); font-weight: 700; }
+  .spec-table td { color: var(--text-muted); }
+
+  /* reviews */
+  .reviews-summary { display: grid; grid-template-columns: 1fr 1.4fr; gap: 24px; margin-bottom: 28px; padding: 20px; background: var(--surface-2); border-radius: var(--r-md); }
+  .rev-score { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .rev-big { font-size: 2.4rem; font-weight: 800; color: var(--brand-navy); }
+  .rev-note p { display: flex; align-items: flex-start; gap: 8px; font-size: .85rem; color: var(--text-muted); background: rgba(245,166,35,.1); padding: 12px; border-radius: var(--r-sm); }
+  .review-list { display: flex; flex-direction: column; gap: 16px; }
+  .review-item { padding: 16px; border: 1px solid var(--border); border-radius: var(--r-md); }
+  .rev-head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .rev-avatar { width: 38px; height: 38px; border-radius: 50%; background: var(--brand-navy); color: #fff; display: grid; place-items: center; font-weight: 700; }
+  .rev-head strong { display: block; font-size: .9rem; }
+  .rev-stars { display: inline-flex; gap: 1px; color: var(--brand-gold); }
+  .rev-date { margin-right: auto; font-size: .8rem; color: var(--text-soft); }
+  .review-item p { font-size: .9rem; line-height: 1.8; }
+
+  .pd-related { margin-top: 8px; }
+  .prod-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+
+  @media (max-width: 880px) {
+    .pd-grid { grid-template-columns: 1fr; gap: 24px; }
+    .pd-keyfeats, .pd-feats-list { grid-template-columns: 1fr; }
+    .reviews-summary { grid-template-columns: 1fr; }
+    .prod-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 540px) {
+    .pd-thumbs .pd-thumb { width: 60px; height: 60px; }
+    .pd-buy { flex-direction: column; }
+    .pd-add { width: 100%; }
+    .prod-grid { grid-template-columns: 1fr; }
+  }
+</style>
+
+<script>
+  // گالری: تعویض تصویر اصلی با کلیک روی تصویر کوچک
+  const main = document.getElementById('pd-main') as HTMLImageElement | null;
+  document.querySelectorAll<HTMLElement>('.pd-thumb').forEach((t) => {
+    t.addEventListener('click', () => {
+      if (main) main.src = t.getAttribute('data-thumb') || main.src;
+      document.querySelectorAll('.pd-thumb').forEach((x) => x.classList.remove('active'));
+      t.classList.add('active');
+    });
+  });
+
+  // استپر تعداد
+  const FA = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
+  const toFa = (n: string | number) => String(n).replace(/[0-9]/g, (d) => FA[+d]);
+  const fromFa = (s: string) => s.replace(/[۰-۹]/g, (d) => String(FA.indexOf(d)));
+  const qtyVal = document.getElementById('qty-val')!;
+  let qty = 1;
+  const maxQty = (() => {
+    const add = document.getElementById('pd-add');
+    try { return JSON.parse(add?.getAttribute('data-product') || '{}').maxQty || 99; } catch { return 99; }
+  })();
+  const setQty = (n: number) => { qty = Math.max(1, Math.min(maxQty, n)); qtyVal.textContent = toFa(qty); };
+  document.querySelector('[data-qty-inc]')?.addEventListener('click', () => setQty(qty + 1));
+  document.querySelector('[data-qty-dec]')?.addEventListener('click', () => setQty(qty - 1));
+
+  // تب‌ها
+  const tabs = document.querySelectorAll<HTMLElement>('.pd-tab');
+  const panels = document.querySelectorAll<HTMLElement>('.pd-tab-panel');
+  tabs.forEach((tab) => {
+    tab.addEventListener('click', () => {
+      const target = tab.getAttribute('data-tab');
+      tabs.forEach((t) => t.classList.remove('active'));
+      panels.forEach((p) => p.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById(`tab-${target}`)?.classList.add('active');
+    });
+  });
+
+  // افزودن به سبد با تعداد انتخاب‌شده
+  import('../../scripts/app.ts').then(({ addToCart, toast }) => {
+    document.getElementById('pd-add')?.addEventListener('click', () => {
+      const raw = document.getElementById('pd-add')?.getAttribute('data-product');
+      if (!raw) return;
+      try {
+        const prod = JSON.parse(raw);
+        addToCart({ id: prod.id, name: prod.name, slug: prod.slug, price: prod.price, image: prod.image, maxQty: prod.maxQty }, qty);
+        toast(`${toFa(qty)} عدد به سبد خرید اضافه شد`);
+      } catch {}
+    });
+  });
+</script>

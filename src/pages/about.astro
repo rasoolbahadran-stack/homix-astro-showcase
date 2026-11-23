@@ -1,0 +1,134 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Breadcrumb from '../components/Breadcrumb.astro';
+import Icon from '../components/Icon.astro';
+import { site, stats, benefits, trustBadges } from '../data';
+import { href } from '../lib/nav';
+
+const values = [
+  { icon: 'shield', title: 'اصالت و کیفیت', desc: 'هر کالا پیش از ارسال توسط کارشناسان فنی بررسی می‌شود تا با اطمینان کامل به دست شما برسد.' },
+  { icon: 'headset', title: 'مشاوره تخصصی', desc: 'تیم پشتیبانی هومیکس قبل و بعد از خرید، در انتخاب و استفاده درست از محصول همراه شماست.' },
+  { icon: 'truck', title: 'تحویل سریع و مطمئن', desc: 'شبکه ارسال سراسری، سفارش‌ها را در کوتاه‌ترین زمان و با بسته‌بندی ایمن تحویل می‌دهد.' },
+  { icon: 'warranty', title: 'خدمات پس از فروش', desc: 'گارانتی معتبر و شبکه مجاز خدمات در سراسر کشور، آرامش خاطر شما را تضمین می‌کنند.' },
+];
+---
+<Layout
+  title="درباره ما"
+  description="درباره فروشگاه هومیکس — مرجع تخصصی لوازم خانگی با ۱۴ سال تجربه، ضمانت اصالت کالا و شبکه خدمات پس از فروش سراسری."
+>
+  <div class="container about-wrap">
+    <Breadcrumb items={[{ label: 'صفحه اصلی', href: '' }, { label: 'درباره ما' }]} />
+
+    <section class="about-hero">
+      <div class="ah-text reveal">
+        <span class="eyebrow"><Icon name="sparkles" size={14} /> درباره هومیکس</span>
+        <h1>از ۱۴ سال پیش، مرجع لوازم خانگی شما</h1>
+        <p>
+          هومیکس با هدف ساده‌سازی خرید لوازم خانگی تاسیس شد؛ فروشگاهی که در آن انتخاب میان
+          بهترین برندهای جهان با مشاوره تخصصی، قیمت منصفانه و خدمات پس از فروش قابل‌اعتماد
+          همراه باشد. امروز با بیش از ۱۲٬۴۸۰ مشتری راضی و شبکه ارسال سراسری، یکی از مراجع
+          تخصصی لوازم خانگی در کشور هستیم.
+        </p>
+        <p>
+          تیم ما از کارشناسان فنی، مشاوران فروش و تکنسین‌های نصب تشکیل شده که در هر مرحله
+          از خرید تا نصب و راه‌اندازی، در کنار شما هستند. ما معتقدیم خرید لوازم خانگی فقط
+          یک تراکنش نیست؛ آغاز یک تجربه طولانی‌مدت از راحتی و آرامش در خانه است.
+        </p>
+        <div class="ah-cta">
+          <a href={href('products')} class="btn btn-primary btn-lg"><Icon name="cart" size={18} /> مشاهده محصولات</a>
+          <a href={href('contact')} class="btn btn-ghost btn-lg">تماس با ما</a>
+        </div>
+      </div>
+      <div class="ah-stats reveal">
+        {stats.map((s) => (
+          <div class="ah-stat"><span class="ah-val">{s.value}</span><span class="ah-lbl">{s.label}</span></div>
+        ))}
+      </div>
+    </section>
+
+    <section class="section-sm">
+      <div class="section-head center-head"><div><span class="eyebrow">ارزش‌های ما</span><h2>چرا به هومیکس اعتماد کنید؟</h2></div></div>
+      <div class="values-grid">
+        {values.map((v, i) => (
+          <div class="value-card reveal" data-stagger={i}>
+            <span class="v-ic"><Icon name={v.icon} size={26} /></span>
+            <h3>{v.title}</h3>
+            <p>{v.desc}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section class="about-mission reveal">
+      <div class="mission-inner">
+        <h2>ماموریت ما</h2>
+        <p>
+          ماموریت هومیکس این است که خرید لوازم خانگی را به تجربه‌ای شفاف، آسان و مطمئن تبدیل
+          کنیم. ما با انتخاب دقیق برندها، شفافیت کامل در قیمت و مشخصات، و پشتیبانی واقعی پس
+          از فروش، تلاش می‌کنیم تا هر مشتری با اطمینان کامل خرید کند و سال‌ها از محصول خود
+          راضی بماند.
+        </p>
+        <ul class="mission-list">
+          {benefits.map((b) => (
+            <li><Icon name="check-circle" size={18} /> <strong>{b.title}:</strong> {b.desc}</li>
+          ))}
+        </ul>
+      </div>
+    </section>
+
+    <section class="about-demo">
+      <div class="demo-box">
+        <Icon name="sparkles" size={28} class="demo-ic" />
+        <div>
+          <h2>یک نمونه‌کار، نه یک فروشگاه واقعی</h2>
+          <p>{site.demoNote} این وب‌سایت برای نمایش توانمندی طراحی و توسعه فروشگاه اینترنتی ساخته شده است و هیچ سفارش یا پرداخت واقعی پردازش نمی‌کند.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+</Layout>
+
+<style>
+  .about-wrap { padding-block: 24px 60px; }
+  .about-wrap :global(.breadcrumb) { margin-bottom: 20px; }
+  .about-hero { display: grid; grid-template-columns: 1.5fr 1fr; gap: 40px; align-items: center; margin-bottom: 48px; }
+  .ah-text .eyebrow { display: inline-flex; align-items: center; gap: 6px; color: var(--brand-gold-700); font-weight: 700; font-size: .85rem; margin-bottom: 10px; }
+  .ah-text h1 { font-size: clamp(1.7rem, 3.5vw, 2.4rem); margin-bottom: 16px; }
+  .ah-text p { line-height: 1.9; margin-bottom: 14px; }
+  .ah-cta { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 20px; }
+  .ah-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .ah-stat { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 28px 20px; text-align: center; box-shadow: var(--shadow-sm); }
+  .ah-val { display: block; font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 800; color: var(--brand-gold); }
+  .ah-lbl { font-size: .85rem; color: var(--text-muted); }
+
+  .values-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+  .value-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 28px 22px; transition: transform .3s, box-shadow .3s; }
+  .value-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-md); }
+  .v-ic { width: 56px; height: 56px; border-radius: var(--r-md); background: linear-gradient(135deg, rgba(245,166,35,.14), rgba(245,166,35,.05)); color: var(--brand-gold-700); display: grid; place-items: center; margin-bottom: 14px; }
+  .value-card h3 { font-size: 1.05rem; margin-bottom: 8px; }
+  .value-card p { font-size: .87rem; line-height: 1.7; }
+
+  .about-mission { background: linear-gradient(135deg, var(--brand-navy-800), var(--brand-navy-600)); border-radius: var(--r-xl); padding: clamp(28px, 5vw, 56px); color: #fff; margin-block: 40px; }
+  .about-mission h2 { color: #fff; margin-bottom: 16px; }
+  .about-mission p { color: #c5d0e2; line-height: 1.9; max-width: 70ch; margin-bottom: 20px; }
+  .mission-list { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .mission-list li { display: flex; align-items: flex-start; gap: 10px; color: #c5d0e2; font-size: .9rem; }
+  .mission-list :global(svg) { color: var(--brand-gold); flex-shrink: 0; margin-top: 3px; }
+  .mission-list strong { color: #fff; }
+
+  .about-demo { margin-top: 16px; }
+  .demo-box { display: flex; gap: 18px; align-items: flex-start; background: rgba(245,166,35,.08); border: 1px solid rgba(245,166,35,.3); border-radius: var(--r-lg); padding: 24px; }
+  .demo-ic { color: var(--brand-gold-700); flex-shrink: 0; }
+  .demo-box h2 { font-size: 1.15rem; margin-bottom: 6px; }
+  .demo-box p { font-size: .9rem; line-height: 1.8; }
+
+  @media (max-width: 880px) {
+    .about-hero { grid-template-columns: 1fr; }
+    .values-grid { grid-template-columns: repeat(2, 1fr); }
+    .mission-list { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 540px) {
+    .values-grid { grid-template-columns: 1fr; }
+    .ah-stats { grid-template-columns: 1fr 1fr; }
+  }
+</style>

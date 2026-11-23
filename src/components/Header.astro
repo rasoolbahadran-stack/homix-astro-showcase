@@ -1,0 +1,218 @@
+---
+import Icon from './Icon.astro';
+import { site, navLinks, categories } from '../data';
+import { href } from '../lib/nav';
+---
+<header class="site-header">
+  <!-- نوار بالایی -->
+  <div class="topbar">
+    <div class="container topbar-inner">
+      <ul class="topbar-trust">
+        <li><Icon name="shield" size={15} /> ضمانت اصالت کالا</li>
+        <li class="sep"><Icon name="truck" size={15} /> ارسال سراسری</li>
+        <li class="sep"><Icon name="return" size={15} /> ۷ روز بازگشت</li>
+      </ul>
+      <div class="topbar-side">
+        <a href={href('contact')} class="topbar-phone"><Icon name="phone" size={15} /> {site.phone}</a>
+        <a href={href('about')} class="topbar-link">ورود / ثبت‌نام</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- سربرگ اصلی -->
+  <div class="header-main">
+    <div class="container header-inner">
+      <div class="header-start">
+        <button class="menu-btn" data-menu-toggle aria-label="منو">
+          <Icon name="menu" size={24} />
+        </button>
+        <a href={href('')} class="logo" aria-label={site.name}>
+          <span class="logo-mark" aria-hidden="true">
+            <svg viewBox="0 0 64 64" width="40" height="40">
+              <rect width="64" height="64" rx="16" fill="#0e2240"/>
+              <rect x="18" y="16" width="28" height="32" rx="4" fill="none" stroke="#f5a623" stroke-width="3"/>
+              <path d="M18 30h28" stroke="#f5a623" stroke-width="3" stroke-linecap="round"/>
+              <circle cx="32" cy="40" r="3" fill="#f5a623"/>
+              <rect x="22" y="20" width="20" height="3" rx="1.5" fill="#18a999"/>
+            </svg>
+          </span>
+          <span class="logo-text">
+            <span class="logo-name">هومیکس</span>
+            <span class="logo-sub">{site.tagline}</span>
+          </span>
+        </a>
+      </div>
+
+      <nav class="main-nav" aria-label="ناوبری اصلی">
+        <ul>
+          {navLinks.map((l) => (
+            <li><a href={href(l.href.replace(/^\//, ''))}>{l.label}</a></li>
+          ))}
+        </ul>
+      </nav>
+
+      <div class="header-end">
+        <button class="icon-btn" data-search-toggle aria-label="جستجو">
+          <Icon name="search" size={22} />
+        </button>
+        <a href={href('cart')} class="icon-btn cart-btn" data-cart-icon aria-label="سبد خرید">
+          <Icon name="cart" size={22} />
+          <span class="cart-badge" data-cart-count>۰</span>
+        </a>
+        <button class="menu-btn menu-btn-end" data-menu-toggle aria-label="منو">
+          <Icon name="menu" size={24} />
+        </button>
+      </div>
+    </div>
+
+    <!-- نوار جستجو -->
+    <div class="search-bar" data-search-bar>
+      <div class="container search-inner">
+        <form data-search-form class="search-form">
+          <Icon name="search" size={20} class="search-ic" />
+          <input
+            type="search"
+            data-search-input
+            placeholder="جستجو در میان ۳٬۲۵۰+ محصول لوازم خانگی…"
+            aria-label="جستجوی محصول"
+          />
+          <button type="submit" class="btn btn-primary">جستجو</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!--overlay منوی موبایل -->
+<div class="menu-overlay" data-menu-overlay></div>
+<aside class="mobile-drawer" data-menu-drawer aria-label="منوی موبایل">
+  <div class="drawer-head">
+    <span class="drawer-title">منوی هومیکس</span>
+    <button class="icon-btn" data-menu-toggle aria-label="بستن"><Icon name="close" size={22} /></button>
+  </div>
+  <form data-search-form class="drawer-search">
+    <Icon name="search" size={18} />
+    <input type="search" data-search-input placeholder="جستجوی محصول…" aria-label="جستجو" />
+  </form>
+  <nav class="drawer-nav">
+    <a href={href('')}><Icon name="home" size={18} /> صفحه اصلی</a>
+    {navLinks.slice(1).map((l) => (
+      <a href={href(l.href.replace(/^\//, ''))}>{l.label}</a>
+    ))}
+  </nav>
+  <div class="drawer-section">
+    <h4>دسته‌بندی‌ها</h4>
+    <div class="drawer-cats">
+      {categories.slice(0, 8).map((c) => (
+        <a href={href(`category/${c.slug}`)}><Icon name={c.icon} size={18} /> {c.name}</a>
+      ))}
+      <a href={href('products')} class="more-cats">همه دسته‌بندی‌ها</a>
+    </div>
+  </div>
+  <div class="drawer-foot">
+    <a href={`tel:${site.phoneHref}`}><Icon name="phone" size={16} /> {site.phone}</a>
+    {site.isDemo && <span class="drawer-demo">نمونه‌کار نمایشی</span>}
+  </div>
+</aside>
+
+<style>
+  .site-header { position: sticky; top: 0; z-index: 100; background: var(--surface); }
+
+  /* topbar */
+  .topbar { background: var(--brand-navy-800); color: #cdd7e8; font-size: .8rem; }
+  .topbar-inner { display: flex; justify-content: space-between; align-items: center; height: 38px; }
+  .topbar-trust { display: flex; align-items: center; gap: 18px; }
+  .topbar-trust li { display: inline-flex; align-items: center; gap: 6px; }
+  .topbar-trust .sep { display: inline-flex; }
+  .topbar-side { display: flex; align-items: center; gap: 18px; }
+  .topbar-phone, .topbar-link { color: #cdd7e8; display: inline-flex; align-items: center; gap: 6px; transition: color .2s; }
+  .topbar-phone:hover, .topbar-link:hover { color: #fff; }
+
+  /* header main */
+  .header-main { border-bottom: 1px solid var(--border); background: var(--surface); }
+  .header-inner { display: flex; align-items: center; justify-content: space-between; gap: 24px; height: var(--header-h); }
+  .header-start { display: flex; align-items: center; gap: 12px; }
+
+  .logo { display: flex; align-items: center; gap: 12px; }
+  .logo-mark { display: grid; place-items: center; }
+  .logo-text { display: flex; flex-direction: column; line-height: 1.1; }
+  .logo-name { font-size: 1.5rem; font-weight: 800; color: var(--brand-navy); letter-spacing: -.02em; }
+  .logo-sub { font-size: .68rem; color: var(--text-soft); font-weight: 600; }
+
+  .main-nav { display: none; }
+  .main-nav ul { display: flex; align-items: center; gap: 4px; }
+  .main-nav a {
+    padding: 10px 14px; border-radius: var(--r-sm); font-weight: 600; color: var(--text);
+    transition: all .2s var(--ease); position: relative;
+  }
+  .main-nav a:hover { color: var(--brand-gold-700); background: var(--surface-2); }
+
+  .header-end { display: flex; align-items: center; gap: 6px; }
+  .icon-btn {
+    position: relative; width: 44px; height: 44px; display: grid; place-items: center;
+    border-radius: var(--r-sm); color: var(--brand-navy); transition: all .2s var(--ease);
+  }
+  .icon-btn:hover { background: var(--surface-2); color: var(--brand-gold-700); }
+  .cart-badge {
+    position: absolute; top: 4px; left: 4px; min-width: 18px; height: 18px; padding: 0 5px;
+    background: var(--brand-coral); color: #fff; font-size: .68rem; font-weight: 700;
+    border-radius: var(--r-pill); display: grid; place-items: center; line-height: 1;
+    border: 2px solid var(--surface);
+  }
+  .cart-btn.cart-bounce { animation: cart-bounce .5s var(--ease); }
+
+  .menu-btn { display: grid; place-items: center; width: 44px; height: 44px; border-radius: var(--r-sm); color: var(--brand-navy); }
+  .menu-btn:hover { background: var(--surface-2); }
+  .menu-btn-end { display: none; }
+
+  /* search bar */
+  .search-bar {
+    max-height: 0; overflow: hidden; transition: max-height .35s var(--ease);
+    background: var(--surface-2); border-bottom: 1px solid transparent;
+  }
+  .search-bar.open { max-height: 90px; border-bottom-color: var(--border); }
+  .search-inner { padding-block: 14px; }
+  .search-form { display: flex; align-items: center; gap: 10px; background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--r-pill); padding: 6px 6px 6px 18px; }
+  .search-form:focus-within { border-color: var(--brand-gold); box-shadow: 0 0 0 4px rgba(245,166,35,.12); }
+  .search-ic { color: var(--text-soft); flex-shrink: 0; }
+  .search-form input { flex: 1; border: none; outline: none; background: none; font-size: .95rem; padding: 8px 0; min-width: 0; }
+  .search-form .btn { padding: 10px 22px; }
+
+  /* mobile drawer */
+  .menu-overlay { position: fixed; inset: 0; background: rgba(10,26,48,.5); backdrop-filter: blur(2px); opacity: 0; visibility: hidden; z-index: 200; transition: opacity .3s; }
+  .menu-overlay.show { opacity: 1; visibility: visible; }
+  .mobile-drawer {
+    position: fixed; top: 0; right: 0; bottom: 0; width: min(330px, 86vw); background: var(--surface);
+    z-index: 201; transform: translateX(100%); transition: transform .35s var(--ease);
+    display: flex; flex-direction: column; box-shadow: -10px 0 40px rgba(14,34,64,.2);
+  }
+  .mobile-drawer.open { transform: translateX(0); }
+  .drawer-head { display: flex; align-items: center; justify-content: space-between; padding: 18px 20px; border-bottom: 1px solid var(--border); }
+  .drawer-title { font-weight: 800; color: var(--brand-navy); }
+  .drawer-search { display: flex; align-items: center; gap: 10px; padding: 14px 20px; background: var(--surface-2); border-bottom: 1px solid var(--border); }
+  .drawer-search input { flex: 1; border: none; outline: none; background: none; }
+  .drawer-nav { display: flex; flex-direction: column; padding: 10px 12px; }
+  .drawer-nav a { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: var(--r-sm); font-weight: 600; color: var(--text); transition: background .2s; }
+  .drawer-nav a:hover { background: var(--surface-2); }
+  .drawer-section { padding: 8px 20px 16px; overflow-y: auto; }
+  .drawer-section h4 { font-size: .8rem; color: var(--text-soft); margin: 12px 0 8px; font-weight: 700; }
+  .drawer-cats { display: flex; flex-direction: column; }
+  .drawer-cats a { display: flex; align-items: center; gap: 10px; padding: 9px 8px; border-radius: var(--r-xs); font-size: .9rem; color: var(--text-muted); }
+  .drawer-cats a:hover { background: var(--surface-2); color: var(--brand-navy); }
+  .more-cats { color: var(--brand-gold-700) !important; font-weight: 700 !important; }
+  .drawer-foot { margin-top: auto; padding: 16px 20px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; font-size: .85rem; }
+  .drawer-foot a { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; color: var(--brand-navy); }
+  .drawer-demo { background: var(--brand-gold); color: var(--brand-navy-800); padding: 3px 10px; border-radius: var(--r-pill); font-size: .72rem; font-weight: 700; }
+
+  @media (min-width: 992px) {
+    .main-nav { display: block; }
+    .menu-btn { display: none; }
+    .menu-btn-end { display: none; }
+    .topbar-trust .sep:nth-child(n+3) { display: none; }
+  }
+  @media (max-width: 560px) {
+    .topbar-trust li:nth-child(n+2) { display: none; }
+    .topbar-link { display: none; }
+    .logo-sub { display: none; }
+  }
+</style>

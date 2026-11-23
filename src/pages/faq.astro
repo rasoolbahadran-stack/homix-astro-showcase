@@ -1,0 +1,92 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Breadcrumb from '../components/Breadcrumb.astro';
+import Icon from '../components/Icon.astro';
+import { faqs } from '../data';
+import { href } from '../lib/nav';
+
+const ld = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((f) => ({
+    '@type': 'Question',
+    name: f.q,
+    acceptedAnswer: { '@type': 'Answer', text: f.a },
+  })),
+};
+---
+<Layout
+  title="سوالات متداول"
+  description="پاسخ پرسش‌های رایج مشتریان هومیکس درباره گارانتی، ارسال، بازگشت کالا، خرید اقساطی و نصب لوازم خانگی."
+  jsonLd={ld}
+>
+  <div class="container faq-wrap">
+    <Breadcrumb items={[{ label: 'صفحه اصلی', href: '' }, { label: 'سوالات متداول' }]} />
+    <div class="faq-head">
+      <span class="eyebrow"><Icon name="headset" size={14} /> راهنمای خرید</span>
+      <h1>سوالات متداول</h1>
+      <p>پاسخ پرسش‌هایی که مشتریان هومیکس بیش از همه می‌پرسند.</p>
+    </div>
+
+    <div class="faq-list">
+      {faqs.map((f, i) => (
+        <div class={`faq-item reveal ${i === 0 ? 'open' : ''}`} data-stagger={i}>
+          <button class="faq-q" aria-expanded={i === 0 ? 'true' : 'false'}>
+            <span>{f.q}</span>
+            <Icon name="chevron-down" size={20} class="faq-ic" />
+          </button>
+          <div class="faq-a"><p>{f.a}</p></div>
+        </div>
+      ))}
+    </div>
+
+    <div class="faq-cta">
+      <div>
+        <h2>پرسش دیگری دارید؟</h2>
+        <p>کارشناسان ما آماده پاسخگویی هستند.</p>
+      </div>
+      <a href={href('contact')} class="btn btn-primary btn-lg"><Icon name="phone" size={18} /> تماس با ما</a>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .faq-wrap { padding-block: 24px 60px; }
+  .faq-wrap :global(.breadcrumb) { margin-bottom: 20px; }
+  .faq-head { text-align: center; max-width: 56ch; margin: 0 auto 36px; }
+  .faq-head .eyebrow { display: inline-flex; align-items: center; gap: 6px; color: var(--brand-gold-700); font-weight: 700; font-size: .85rem; }
+  .faq-head h1 { font-size: clamp(1.7rem, 3.5vw, 2.3rem); margin: 10px 0 8px; }
+  .faq-head p { color: var(--text-muted); }
+
+  .faq-list { max-width: 820px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
+  .faq-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); overflow: hidden; transition: box-shadow .25s, border-color .25s; }
+  .faq-item.open { box-shadow: var(--shadow-sm); border-color: rgba(245,166,35,.3); }
+  .faq-q { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 22px; font-weight: 700; text-align: right; color: var(--text); font-size: .98rem; }
+  .faq-q:hover { color: var(--brand-gold-700); }
+  .faq-ic { transition: transform .3s var(--ease); color: var(--brand-gold-700); flex-shrink: 0; }
+  .faq-item.open .faq-ic { transform: rotate(180deg); }
+  .faq-a { max-height: 0; overflow: hidden; transition: max-height .35s var(--ease); }
+  .faq-item.open .faq-a { max-height: 320px; }
+  .faq-a p { padding: 0 22px 20px; line-height: 1.9; color: var(--text-muted); }
+
+  .faq-cta { display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; max-width: 820px; margin: 40px auto 0; background: linear-gradient(135deg, var(--brand-navy-800), var(--brand-navy-600)); color: #fff; padding: 32px; border-radius: var(--r-xl); }
+  .faq-cta h2 { color: #fff; }
+  .faq-cta p { color: #b9c4d8; margin-top: 6px; }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('.faq-item').forEach((item) => {
+    const btn = item.querySelector('.faq-q') as HTMLElement;
+    btn.addEventListener('click', () => {
+      const isOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item').forEach((i) => {
+        i.classList.remove('open');
+        i.querySelector('.faq-q')?.setAttribute('aria-expanded', 'false');
+      });
+      if (!isOpen) {
+        item.classList.add('open');
+        btn.setAttribute('aria-expanded', 'true');
+      }
+    });
+  });
+</script>

@@ -1,0 +1,212 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import Icon from '../../components/Icon.astro';
+import { products, categories, brands } from '../../data';
+import { toFa } from '../../lib/format';
+import { href } from '../../lib/nav';
+import { discountPercent } from '../../data/products';
+---
+<Layout
+  title="همه محصولات"
+  description="فهرست کامل محصولات لوازم خانگی هومیکس؛ فیلتر بر اساس دسته‌بندی، برند، قیمت و تخفیف، همراه با جستجو و مرتب‌سازی."
+>
+  <div class="page-head">
+    <div class="container">
+      <Breadcrumb items={[{ label: 'صفحه اصلی', href: '' }, { label: 'محصولات' }]} />
+      <div class="ph-row">
+        <div>
+          <h1>فروشگاه هومیکس</h1>
+          <p class="ph-sub">مرجع تخصصی لوازم خانگی — انتخاب از میان {toFa(products.length)} محصول متنوع.</p>
+        </div>
+        <div class="ph-count"><Icon name="list" size={18} /> <strong data-count>{toFa(products.length)}</strong> محصول</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container shop-wrap" data-shop>
+    <!-- فیلتر سایدبار -->
+    <aside class="filters" id="filters">
+      <div class="filters-head">
+        <h2><Icon name="filter" size={18} /> فیلترها</h2>
+        <button class="clear-btn" data-clear>پاک کردن</button>
+      </div>
+
+      <div class="filter-block">
+        <label class="search-field">
+          <Icon name="search" size={18} />
+          <input type="search" data-search placeholder="نام محصول…" aria-label="جستجوی محصول" />
+        </label>
+      </div>
+
+      <div class="filter-block">
+        <h3>دسته‌بندی</h3>
+        <div class="check-list">
+          {categories.map(c => (
+            <label class="check">
+              <input type="checkbox" data-f-cat={c.slug} data-label={c.name} value={c.slug} />
+              <span>{c.name}</span>
+              <span class="check-count">{toFa(products.filter(p => p.categorySlug === c.slug).length)}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      <div class="filter-block">
+        <h3>برند</h3>
+        <div class="check-list brand-list">
+          {brands.map(b => (
+            <label class="check">
+              <input type="checkbox" data-f-brand={b.slug} data-label={b.name} value={b.slug} />
+              <span>{b.name}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      <div class="filter-block">
+        <h3>محدوده قیمت (تومان)</h3>
+        <div class="price-range">
+          <input type="number" data-f-min placeholder="از" min="0" aria-label="حداقل قیمت" />
+          <span>—</span>
+          <input type="number" data-f-max placeholder="تا" min="0" aria-label="حداکثر قیمت" />
+        </div>
+      </div>
+
+      <div class="filter-block">
+        <label class="check toggle">
+          <input type="checkbox" data-f-discount />
+          <span><Icon name="percent" size={14} /> فقط تخفیف‌دارها</span>
+        </label>
+      </div>
+    </aside>
+
+    <!-- محتوای اصلی -->
+    <div class="shop-main">
+      <div class="toolbar">
+        <button class="filter-toggle" id="filter-toggle" aria-label="نمایش فیلترها">
+          <Icon name="filter" size={18} /> فیلترها
+        </button>
+        <div class="active-tags" data-active-tags></div>
+        <div class="sort-wrap">
+          <label for="sort">مرتب‌سازی:</label>
+          <select id="sort" data-sort>
+            <option value="bestseller">پرفروش‌ترین</option>
+            <option value="newest">جدیدترین</option>
+            <option value="price-asc">ارزان‌ترین</option>
+            <option value="price-desc">گران‌ترین</option>
+            <option value="rating">پرامتیازترین</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="prod-grid shop-grid">
+        {products.map((p) => (
+          <div
+            data-product-card
+            data-name={p.name}
+            data-cat={p.categorySlug}
+            data-brand={p.brandId}
+            data-price={p.price}
+            data-discount={p.oldPrice ? 'true' : 'false'}
+            data-created={p.createdAt}
+            data-sold={p.soldCount}
+            data-rating={p.rating}
+          >
+            <ProductCard product={p} />
+          </div>
+        ))}
+      </div>
+
+      <div class="shop-empty" data-empty style="display:none">
+        <Icon name="search" size={48} />
+        <h3>محصولی مطابق فیلتر شما یافت نشد</h3>
+        <p>لطفاً فیلترها را تغییر دهید یا پاک کنید.</p>
+        <button class="btn btn-primary" data-clear>پاک کردن فیلترها</button>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .page-head { background: var(--surface); border-bottom: 1px solid var(--border); padding-block: 22px 24px; }
+  .ph-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-top: 14px; }
+  .page-head h1 { font-size: clamp(1.6rem, 3vw, 2.1rem); }
+  .ph-sub { color: var(--text-muted); margin-top: 6px; }
+  .ph-count { display: inline-flex; align-items: center; gap: 8px; background: var(--surface-2); padding: 10px 16px; border-radius: var(--r-pill); font-size: .9rem; color: var(--text-muted); }
+  .ph-count strong { color: var(--brand-navy); }
+
+  .shop-wrap { display: grid; grid-template-columns: 280px 1fr; gap: 28px; padding-block: 32px; align-items: flex-start; }
+
+  .filters { position: sticky; top: calc(var(--header-h) + 16px); background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 20px; }
+  .filters-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
+  .filters-head h2 { font-size: 1rem; display: inline-flex; align-items: center; gap: 8px; }
+  .clear-btn { color: var(--brand-coral-600); font-size: .82rem; font-weight: 700; }
+  .clear-btn:hover { text-decoration: underline; }
+
+  .filter-block { padding-block: 14px; border-bottom: 1px solid var(--border-soft); }
+  .filter-block:last-child { border-bottom: none; }
+  .filter-block h3 { font-size: .85rem; color: var(--text); margin-bottom: 10px; font-weight: 700; }
+
+  .search-field { display: flex; align-items: center; gap: 8px; background: var(--surface-2); border: 1.5px solid var(--border); border-radius: var(--r-sm); padding: 8px 12px; }
+  .search-field:focus-within { border-color: var(--brand-gold); }
+  .search-field input { border: none; outline: none; background: none; flex: 1; min-width: 0; font-size: .9rem; }
+
+  .check-list { display: flex; flex-direction: column; gap: 6px; max-height: 200px; overflow-y: auto; padding-left: 4px; }
+  .check { display: flex; align-items: center; gap: 8px; font-size: .86rem; color: var(--text-muted); cursor: pointer; padding: 4px 0; }
+  .check:hover { color: var(--text); }
+  .check input { accent-color: var(--brand-gold); width: 16px; height: 16px; flex-shrink: 0; }
+  .check-count { margin-right: auto; font-size: .74rem; color: var(--text-soft); background: var(--surface-2); padding: 1px 7px; border-radius: var(--r-pill); }
+  .check.toggle span { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; color: var(--text); }
+
+  .price-range { display: flex; align-items: center; gap: 8px; }
+  .price-range input { width: 100%; padding: 8px 10px; border: 1.5px solid var(--border); border-radius: var(--r-sm); font-size: .85rem; outline: none; }
+  .price-range input:focus { border-color: var(--brand-gold); }
+
+  .shop-main { min-width: 0; }
+  .toolbar { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; flex-wrap: wrap; }
+  .filter-toggle { display: none; align-items: center; gap: 8px; padding: 9px 16px; border: 1.5px solid var(--border); border-radius: var(--r-pill); background: var(--surface); font-weight: 600; font-size: .9rem; }
+  .active-tags { display: flex; flex-wrap: wrap; gap: 8px; flex: 1; min-width: 0; }
+  .active-tag { background: rgba(245,166,35,.12); color: var(--brand-gold-700); font-size: .78rem; font-weight: 600; padding: 4px 12px; border-radius: var(--r-pill); }
+  .sort-wrap { display: flex; align-items: center; gap: 8px; margin-right: auto; }
+  .sort-wrap label { font-size: .85rem; color: var(--text-muted); white-space: nowrap; }
+  .sort-wrap select { padding: 9px 14px; border: 1.5px solid var(--border); border-radius: var(--r-sm); background: var(--surface); font-size: .88rem; outline: none; cursor: pointer; }
+  .sort-wrap select:focus { border-color: var(--brand-gold); }
+
+  .shop-grid { grid-template-columns: repeat(3, 1fr); }
+
+  .shop-empty { text-align: center; padding: 60px 20px; color: var(--text-muted); }
+  .shop-empty :global(svg) { color: var(--text-soft); margin: 0 auto 14px; }
+  .shop-empty h3 { margin-bottom: 6px; }
+  .shop-empty p { margin-bottom: 18px; }
+
+  @media (max-width: 980px) {
+    .shop-wrap { grid-template-columns: 1fr; }
+    .filters { position: fixed; top: 0; right: -100%; width: min(320px, 86vw); height: 100vh; z-index: 300; border-radius: 0; overflow-y: auto; transition: right .3s var(--ease); padding-top: 60px; }
+    .filters.open { right: 0; box-shadow: -10px 0 40px rgba(14,34,64,.2); }
+    .filter-toggle { display: inline-flex; }
+    .shop-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 540px) {
+    .shop-grid { grid-template-columns: 1fr; }
+  }
+</style>
+
+<script>
+  import '../../scripts/shop.ts';
+  // باز/بسته‌کردن سایدبار فیلتر در موبایل
+  const toggle = document.getElementById('filter-toggle');
+  const filters = document.getElementById('filters');
+  toggle?.addEventListener('click', () => filters?.classList.toggle('open'));
+  filters?.querySelectorAll('a, label').forEach(el => el.addEventListener('click', () => {
+    // در موبایل پس از انتخاب، سایدبار باز بماند تا کاربر ببازد
+  }));
+  // بستن با کلیک خارج
+  document.addEventListener('click', (e) => {
+    if (!filters?.classList.contains('open')) return;
+    if (!filters.contains(e.target as Node) && e.target !== toggle && !toggle?.contains(e.target as Node)) {
+      filters?.classList.remove('open');
+    }
+  });
+</script>
